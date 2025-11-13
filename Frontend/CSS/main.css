@@ -39,6 +39,146 @@ body.light-mode {
     --shadow-glow: 0 0 10px rgba(0, 123, 255, 0.2);
 }
 
+/* * 10. ESTILOS PÁGINA DE INICIO (HOME) (¡NUEVO!)
+ *********************************************/
+
+/* --- 1. Hero Section --- */
+.hero-section {
+    background-color: var(--color-surface);
+    padding: 5rem 1.5rem;
+    text-align: center;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.hero-title {
+    font-size: 2.8rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--color-text);
+}
+
+/* Helper para texto neón */
+.text-primary {
+    color: var(--color-primary);
+}
+
+.hero-subtitle {
+    font-size: 1.2rem;
+    color: var(--color-text-muted);
+    max-width: 600px;
+    margin: 0 auto 2rem auto;
+}
+
+/* Botón del Hero (re-usamos estilo de botón primario) */
+.hero-btn {
+    display: inline-block; /* Para que no ocupe todo el ancho */
+    padding: 0.85rem 1.75rem;
+    background-color: var(--color-primary);
+    color: var(--color-background);
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.hero-btn:hover {
+    background-color: var(--color-primary-hover);
+    box-shadow: var(--shadow-glow);
+}
+
+/* --- 2. Títulos de Sección --- */
+.section-title {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-top: 3.5rem;
+    margin-bottom: 2rem;
+}
+
+/* --- 3. Tarjetas de Categoría --- */
+.category-container {
+    display: grid;
+    /* Grid responsivo (1 a 3 columnas) */
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.category-card {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    text-decoration: none;
+    
+    /* El mismo efecto "mamalón" de las product-card */
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.category-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-glow);
+}
+
+.category-card h4 {
+    color: var(--color-primary);
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+}
+
+.category-card p {
+    color: var(--color-text-muted);
+    font-size: 0.95rem;
+}
+
+/* --- 4. Banner de Ofertas (CTA) --- */
+.cta-banner {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-primary); /* Borde neón */
+    box-shadow: var(--shadow-glow); /* Efecto glow */
+    border-radius: 8px;
+    padding: 3rem 1.5rem;
+    margin: 4rem 0;
+    text-align: center;
+}
+
+.cta-banner h3 {
+    font-size: 2.2rem;
+    color: var(--color-text);
+    margin-bottom: 0.5rem;
+}
+
+.cta-banner p {
+    color: var(--color-text-muted);
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Botón del CTA (invertido) */
+.cta-btn {
+    display: inline-block;
+    padding: 0.8rem 1.5rem;
+    background-color: transparent;
+    color: var(--color-primary);
+    border: 2px solid var(--color-primary);
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.cta-btn:hover {
+    background-color: var(--color-primary);
+    color: var(--color-background); /* Se rellena */
+}
+
 /* * 2. RESET BÁSICO Y ESTILOS GLOBALES
  */
 * {
@@ -168,6 +308,101 @@ h3 { color: var(--color-primary); } /* Títulos de producto también */
     box-shadow: var(--shadow-glow); /* Usamos el glow fuerte */
 }
 
+
+/* * 4.2 ESTILOS DE FILTROS 
+ *********************************************/
+
+.filter-container {
+    display: flex;
+    flex-wrap: wrap; /* Para que se vea bien en móviles */
+    align-items: center;
+    gap: 2rem; /* Espacio entre grupos de filtros */
+    
+    background-color: var(--color-surface);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    margin-bottom: 2.5rem;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem; /* Espacio entre etiqueta y menú */
+}
+
+.filter-group label,
+.filter-toggle-group span {
+    color: var(--color-text-muted);
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+/* Estilo para los menús <select> */
+.filter-select {
+    /* Quitamos la apariencia fea del sistema */
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    
+    background-color: var(--color-background); /* Fondo oscuro */
+    color: var(--color-text); /* Texto blanco */
+    border: 1px solid var(--color-primary); /* Borde neón */
+    border-radius: 5px;
+    padding: 0.6rem 2.5rem 0.6rem 1rem; /* Espacio para la flecha */
+    font-size: 0.9rem;
+    cursor: pointer;
+
+    /* Flecha personalizada neón */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%2300e5ff'%3E%3Cpath d='M8 11.207l-4.6-4.6L4.807 5.2 8 8.393l3.193-3.193L12.6 6.607 8 11.207z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1em 1em;
+}
+
+/* Estilo para el Toggle Switch de "Ofertas" */
+.toggle-checkbox {
+    /* Ocultamos el checkbox real */
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+}
+
+.toggle-track {
+    display: block;
+    width: 44px;  /* Ancho del riel */
+    height: 24px; /* Alto del riel */
+    background-color: var(--color-border);
+    border-radius: 12px; /* Totalmente redondeado */
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+/* El círculo que se mueve (el "slider") */
+.toggle-track::before {
+    content: "";
+    position: absolute;
+    width: 18px; /* Tamaño del círculo */
+    height: 18px;
+    background-color: var(--color-text); /* Color apagado */
+    border-radius: 50%;
+    top: 3px;
+    left: 3px;
+    transition: transform 0.2s ease;
+}
+
+/* ESTADO ENCENDIDO (Checked) */
+.toggle-checkbox:checked + .toggle-track {
+    background-color: var(--color-primary); /* Fondo neón */
+}
+
+.toggle-checkbox:checked + .toggle-track::before {
+    transform: translateX(20px); /* Movemos el círculo */
+    background-color: var(--color-surface); /* Color oscuro */
+}
+
 /* * 5. ESTILOS DE PRODUCTOS 
  */
 .product-grid {
@@ -256,4 +491,303 @@ h3 { color: var(--color-primary); } /* Títulos de producto también */
     margin-top: 3rem;
     font-size: 0.9rem;
     color: var(--color-text-muted);
+}
+
+/* * 7. ESTILOS PÁGINA DE CONTACTO 
+ *********************************************/
+
+.page-description {
+    color: var(--color-text-muted);
+    font-size: 1.1rem;
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.contact-wrapper {
+    display: flex;
+    flex-wrap: wrap; /* Se apila en móviles */
+    gap: 3rem;
+    background-color: var(--color-surface);
+    padding: 2.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+}
+
+/* El formulario ocupa más espacio */
+.contact-form {
+    flex: 2; /* Ocupa 2/3 del espacio */
+    min-width: 300px;
+}
+
+/* La información "extra" ocupa menos */
+.contact-info {
+    flex: 1; /* Ocupa 1/3 del espacio */
+    min-width: 250px;
+    background-color: var(--color-background); /* Un fondo más oscuro */
+    padding: 1.5rem;
+    border-radius: 5px;
+}
+
+.contact-info h3 {
+    color: var(--color-primary);
+}
+
+.contact-info strong {
+    display: block;
+    color: var(--color-text);
+    margin-top: 1rem;
+}
+
+.contact-info a {
+    color: var(--color-primary);
+    text-decoration: none;
+}
+.contact-info a:hover {
+    text-decoration: underline;
+}
+
+
+/* * ESTILOS "CHIDOTES" DEL FORMULARIO
+ */
+.form-group {
+    position: relative;
+    margin-bottom: 2rem;
+}
+
+/* Campos de texto y textarea */
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 1rem 0.75rem 0.5rem; /* Padding para dejar espacio al label */
+    background-color: var(--color-background); /* Fondo oscuro */
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group textarea {
+    resize: vertical; /* Permite al usuario ajustar la altura */
+}
+
+/* El label "flotante" */
+.form-group label {
+    position: absolute;
+    top: 0.85rem;
+    left: 0.75rem;
+    color: var(--color-text-muted);
+    pointer-events: none;
+    transition: all 0.2s ease;
+}
+
+/* * La magia: Cuando haces clic (focus) O cuando ya escribiste (valid)
+ * 1. El borde brilla en neón.
+ * 2. El label se encoge y se sube.
+ */
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-glow);
+}
+
+.form-group input:focus + label,
+.form-group textarea:focus + label,
+/* :not(:placeholder-shown) es un truco para "cuando tiene texto" */
+.form-group input:not(:placeholder-shown) + label, 
+.form-group textarea:not(:placeholder-shown) + label {
+    top: 0.25rem;
+    font-size: 0.75rem;
+    color: var(--color-primary);
+}
+/* Fix para que los required no queden feos */
+.form-group input:not(:placeholder-shown) {
+    padding-top: 1rem;
+}
+
+
+/* Botón de envío */
+.submit-btn {
+    display: block;
+    width: 100%;
+    padding: 0.85rem;
+    background-color: var(--color-primary);
+    color: var(--color-background);
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.submit-btn:hover {
+    background-color: var(--color-primary-hover);
+    box-shadow: var(--shadow-glow);
+}
+
+
+/* * 8. ESTILOS PÁGINA FAQ (ACORDEÓN) (¡NUEVO!)
+ *********************************************/
+
+.faq-container {
+    max-width: 800px; /* Hacemos el acordeón más centrado */
+    margin: 2rem auto;
+}
+
+.faq-item {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    overflow: hidden; /* ¡Importante para que max-height funcione! */
+}
+
+/* El botón de la pregunta */
+.faq-question {
+    width: 100%;
+    padding: 1.5rem;
+    
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    background: transparent;
+    border: none;
+    color: var(--color-text);
+    font-size: 1.15rem;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.faq-question:hover {
+    color: var(--color-primary);
+}
+
+/* El ícono '+' */
+.faq-icon {
+    font-size: 1.75rem;
+    color: var(--color-primary);
+    transition: transform 0.3s ease-in-out;
+}
+
+/* El panel de la respuesta (oculto por defecto) */
+.faq-answer {
+    /* La magia del deslizamiento: */
+    max-height: 0;
+    transition: max-height 0.3s ease-out;
+    
+    padding: 0 1.5rem; /* Padding lateral */
+    color: var(--color-text-muted);
+    line-height: 1.7;
+}
+
+/* Damos padding interno al <p> para que no se pegue */
+.faq-answer p {
+    padding-bottom: 1.5rem;
+}
+
+
+/* --- ESTADO ACTIVO (Cuando JS agrega la clase 'active') --- */
+
+.faq-item.active .faq-question {
+    color: var(--color-primary); /* Resalta la pregunta activa */
+}
+
+/* Rota el '+' para que sea una 'x' */
+.faq-item.active .faq-icon {
+    transform: rotate(45deg);
+}
+
+/* Muestra la respuesta */
+.faq-item.active .faq-answer {
+    max-height: 200px; /* Pon un valor más alto si tu texto es muy largo */
+}
+
+
+/* * 9. ESTILOS PÁGINA "SOBRE NOSOTROS" (¡NUEVO!)
+ *********************************************/
+
+/* Estilos para la sección de "Misión" */
+.about-section {
+    background-color: var(--color-surface);
+    padding: 2rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    margin-bottom: 3rem;
+    text-align: center;
+}
+
+.about-section h3 {
+    color: var(--color-primary);
+}
+
+.about-section p {
+    color: var(--color-text-muted);
+    font-size: 1.1rem;
+    line-height: 1.7;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Título de la sección de equipo */
+.team-section h3 {
+    text-align: center;
+    font-size: 1.75rem;
+    color: var(--color-text);
+    margin-bottom: 2rem;
+}
+
+/* Contenedor de las tarjetas */
+.team-container {
+    display: grid;
+    /* Grid responsivo: de 1 a 4 columnas */
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+}
+
+/* La tarjeta de perfil */
+.team-card {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    
+    /* El efecto "glow" y "levantar" */
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.team-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-glow);
+}
+
+/* El círculo para la foto de perfil (placeholder) */
+.team-photo-placeholder {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%; /* Círculo perfecto */
+    background-color: var(--color-background); /* Fondo oscuro */
+    border: 3px solid var(--color-primary); /* Borde neón */
+    margin: 0 auto 1.25rem auto;
+    
+    /* (Puedes poner una <img /> aquí adentro después) */
+}
+
+.team-card h4 {
+    color: var(--color-text);
+    font-size: 1.25rem;
+    margin-bottom: 0.25rem;
+}
+
+/* El "rol" con el color neón */
+.team-role {
+    color: var(--color-primary);
+    font-size: 0.9rem;
+    font-weight: 600;
 }
