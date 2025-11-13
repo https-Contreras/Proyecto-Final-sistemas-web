@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Tech-Up | Tu Tienda de Computadoras</title>
+    
+    <link rel="stylesheet" href="CSS/main.css">
+    <script src="scripts/main.js" defer></script>
+</head>
+<body>
+
+    <header class="site-header">
+        <div class="container">
+            <div class="logo-container">
+                <h1>Tech-Up</h1>
+            </div>
+            
+            <nav class="main-nav">
+                <a href="index.html">Inicio</a>
+                <a href="#product-list">Productos</a>
+                <a href="faq.html">Preguntas Frecuentes</a>
+                <a href="contacto.html">Contacto</a>
+                <a href="nosotros.html">Sobre Nosotros</a>
+            </nav>
+            <div class="header-tools">
+                <button id="accessibility-btn" aria-label="Opciones de accesibilidad">♿</button>
+                <a href="carrito.html" class="cart-icon" aria-label="Ver carrito de compras">
+                    🛒 <span id="cart-count">0</span>
+                </a>
+                <a href="login.html" class="login-btn">Iniciar Sesión</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <h2 id="product-list-title">Nuestros Productos</h2>
+        
+        <section id="product-list" class="product-grid">
+            
+            <article class="product-card">
+                <div class="product-image-container">
+                    <img src="assets/images/laptop-ejemplo.jpg" alt="Laptop Gamer X1">
+                </div>
+                <div class="product-info">
+                    <h3 class="product-title">Laptop Gamer X1</h3>
+                    <p class="product-description">Core i7, 16GB RAM, SSD 1TB, RTX 4060</p>
+                    <p class="product-price">$25,999.00</p>
+                    <button class="add-to-cart-btn" data-product-id="1">Agregar al carrito</button>
+                </div>
+            </article>
+
+            </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            
+            <div class="footer-content">
+                <div class="footer-section footer-links">
+                    <h4>Navegación</h4>
+                    <ul>
+                        <li><a href="index.html">Inicio</a></li>
+                        <li><a href="nosotros.html">Sobre Nosotros</a></li>
+                        <li><a href="contacto.html">Contacto</a></li>
+                        <li><a href="faq.html">Preguntas Frecuentes</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section footer-legal">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="terminos.html">Términos y Condiciones</a></li>
+                        <li><a href="privacidad.html">Política de Privacidad</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section footer-social">
+                    <h4>Síguenos</h4>
+                    <a href="#" class="social-icon" aria-label="Nuestra página de Facebook">f</a>
+                    <a href="#" class="social-icon" aria-label="Nuestro perfil de Twitter/X">X</a>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>Este es un proyecto académico para la materia de Programación de Sistemas WEB.</p>
+                <p>&copy; 2025 Tech-Up. Todos los derechos reservados.</p>
+            </div>
+
+        </div>
+    </footer>
+
+</body>
+</html>

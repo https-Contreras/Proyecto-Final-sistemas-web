@@ -1,0 +1,206 @@
+/* * 1. VARIABLES CSS (CUSTOM PROPERTIES)
+ * Tema "Futurista Oscuro" (Default)
+ */
+:root {
+    /* Paleta de colores oscuros */
+    --color-background: #0a0f18; /* Azul noche muy oscuro */
+    --color-surface: #1a202c;    /* Un gris/azul ligeramente más claro para tarjetas/header */
+    --color-text: #e2e8f0;       /* Texto principal (blanco suave) */
+    --color-text-muted: #a0aec0; /* Texto secundario (grisáceo) */
+    
+    /* El color "tech" principal */
+    --color-primary: #00e5ff;    /* Un cian eléctrico/neón */
+    --color-primary-hover: #00b8cc; /* Un cian más oscuro para hover */
+    
+    --color-border: #2d3748;     /* Borde sutil */
+
+    /* Sombras y brillos */
+    --shadow-card: 0 4px 6px rgba(0, 0, 0, 0.1);
+    
+    /* Sombra de "brillo" (glow) con el color primario */
+    --shadow-glow: 0 0 15px rgba(0, 229, 255, 0.3);
+    
+    /* Tipografía base */
+    --font-size-base: 16px;
+}
+
+/* * Tema "Claro" (Modo de alto contraste para accesibilidad)
+ * Se activa agregando la clase 'light-mode' al <body>
+ */
+body.light-mode {
+    --color-background: #ffffff;
+    --color-surface: #f7fafc;
+    --color-text: #2d3748;
+    --color-text-muted: #718096;
+    --color-primary: #007bff; /* Azul estándar para el modo claro */
+    --color-primary-hover: #0056b3;
+    --color-border: #e2e8f0;
+    --shadow-card: 0 4px 6px rgba(0, 0, 0, 0.05);
+    --shadow-glow: 0 0 10px rgba(0, 123, 255, 0.2);
+}
+
+/* * 2. RESET BÁSICO Y ESTILOS GLOBALES
+ */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: var(--font-size-base);
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6;
+    
+    /* Aplicamos los colores base */
+    background-color: var(--color-background);
+    color: var(--color-text);
+    
+    /* Transición suave para el cambio de tema */
+    transition: background-color 0.3s, color 0.3s;
+}
+
+h1, h2, h3 {
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+}
+
+h1 { color: var(--color-primary); } /* Hacemos que el H1 brille */
+h2 { color: var(--color-text); }
+h3 { color: var(--color-primary); } /* Títulos de producto también */
+
+/* * 3. CLASES DE UTILIDAD Y DISEÑO BÁSICO
+ */
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* * 4. ESTILOS DEL HEADER
+ */
+.site-header {
+    background-color: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    padding: 1.25rem 0;
+    /* Sombra ligera para 'levantar' el header */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.site-header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.main-nav a {
+    margin: 0 0.75rem;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.main-nav a:hover,
+.main-nav a.active { /* Para la página actual */
+    color: var(--color-primary);
+}
+
+.header-tools {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+/* * 5. ESTILOS DE PRODUCTOS (¡El cambio "Chidote"!)
+ */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    padding: 2.5rem 0;
+}
+
+.product-card {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+    
+    /* Transición para el efecto "glow" */
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+/* * Efecto "glow" y "levantar" al pasar el mouse.
+ * Este es el efecto futurista que pediste.
+ */
+.product-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-glow);
+}
+
+.product-image-container img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    display: block;
+    /* Borde sutil, no tan fuerte como la tarjeta */
+    border-bottom: 1px solid var(--color-border);
+}
+
+.product-info {
+    padding: 1.5rem;
+}
+
+.product-description {
+    font-size: 0.95rem;
+    color: var(--color-text-muted);
+    margin-bottom: 1rem;
+}
+
+.product-price {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-text); /* Precio en blanco para contraste */
+    margin-bottom: 1.25rem;
+}
+
+/* Botón estilo "Ghost" que se rellena */
+.add-to-cart-btn {
+    display: block;
+    width: 100%;
+    padding: 0.75rem;
+    
+    background-color: transparent;
+    color: var(--color-primary);
+    border: 2px solid var(--color-primary);
+    
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Efecto de relleno en hover */
+.add-to-cart-btn:hover {
+    background-color: var(--color-primary);
+    color: var(--color-background); /* Invertimos el color */
+}
+
+/* * 6. ESTILOS DEL FOOTER
+ */
+.site-footer {
+    background-color: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+    padding: 2.5rem 0;
+    text-align: center;
+    margin-top: 3rem;
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+}
