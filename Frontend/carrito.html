@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tu Carrito de Compras - Tech-Up</title>
+    
+    <link rel="stylesheet" href="/Frontend/CSS/main.css">
+    
+    <script src="/Frontend/js/loadComponents.js" defer></script>
+    <script src="/Frontend/js/carrito.js" defer></script> </head>
+<body>
+
+    <header class="site-header" id="main-header"></header>
+
+    <main class="container">
+        <h2>Tu Carrito de Compras</h2>
+        
+        <div class="cart-wrapper">
+            
+            <div id="cart-items-list" class="cart-items-list">
+                
+                </div> <aside class="cart-summary">
+                <h3>Resumen de tu Pedido</h3>
+                
+                <div class="summary-line">
+                    <span>Subtotal:</span>
+                    <span id="summary-subtotal">$0.00</span>
+                </div>
+                <div class="summary-line">
+                    <span>Envío:</span>
+                    <span id="summary-shipping">Por calcular</span>
+                </div>
+                
+                <div class="coupon-group">
+                    <label for="coupon-code">Cupón:</label>
+                    <input type="text" id="coupon-code" placeholder="EJ: TECHUP10">
+                    <button class="coupon-btn">Aplicar</button>
+                </div>
+
+                <div class="summary-line total">
+                    <span>Total:</span>
+                    <span id="summary-total">$0.00</span>
+                </div>
+                
+                <button class="submit-btn checkout-btn">Finalizar Compra</button>
+            </aside>
+            
+        </div> </main>
+
+    <footer class="site-footer" id="main-footer"></footer>
+
+</body>
+</html>
