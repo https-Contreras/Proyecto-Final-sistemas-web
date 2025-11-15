@@ -7,7 +7,6 @@
     <title>Tech-Up | Tu Tienda de Computadoras</title>
     
     <link rel="stylesheet" href="CSS/main.css">
-    <script src="/Frontend/js/loadComponents.js"></script>
 </head>
 <body>
 
@@ -100,6 +99,12 @@
     </main>
 
     <footer class="site-footer" id="main-footer"></footer>
+    
+    <!-- IMPORTANTE: El orden de los scripts importa -->
+    <!-- 1. Primero footer.js (define la función) -->
+    <script src="js/footer.js"></script>
+    <!-- 2. Luego loadComponents.js (carga el footer y ejecuta la función) -->
+    <script src="js/loadComponents.js"></script>
 
 </body>
 </html>
