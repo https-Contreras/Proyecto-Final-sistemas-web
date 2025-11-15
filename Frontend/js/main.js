@@ -71,30 +71,30 @@ async function cargarProductos() {
             {
                 id: 1,
                 nombre: "Laptop Gamer Avanzada",
-                descripcion: "Core i9, 32GB RAM, SSD 2TB, RTX 4080",
+                descripcion: "Core i5, 32GB RAM, M.2 1TB, RTX 4060",
                 precio: 48500.00,
-                imagen: "assets/images/laptop-gamer.jpg" // Asegúrate de tener esta imagen de prueba
+                imagen: "http://localhost:3000/images/laptop-gamer.png" // Asegúrate de tener esta imagen de prueba
             },
             {
                 id: 2,
                 nombre: "Estación de Trabajo (Desktop)",
-                descripcion: "Threadripper, 64GB RAM, SSD 4TB, Quadro RTX A4000",
+                descripcion: "Threadripper, 32GB RAM, SSD 2TB, Quadro RTX A4000",
                 precio: 89900.00,
-                imagen: "assets/images/desktop-workstation.jpg"
+                imagen: "http://localhost:3000/images/desktop-workstation.png"
             },
             {
                 id: 3,
                 nombre: "Monitor Curvo Ultrawide 49\"",
                 descripcion: "Panel OLED, 240Hz, 1ms respuesta",
                 precio: 21200.00,
-                imagen: "assets/images/monitor-ultrawide.jpg"
+                imagen: "http://localhost:3000/images/monitor-ultrawide.png"
             },
             {
                 id: 4,
                 nombre: "Teclado Mecánico RGB",
-                descripcion: "Switches ópticos, layout completo, reposamuñecas",
+                descripcion: "Switches ópticos, layout 60%, switches Cherry MX Red",
                 precio: 3100.00,
-                imagen: "assets/images/teclado-mecanico.jpg"
+                imagen: "http://localhost:3000/images/teclado-mecanico.png"
             }
         ];
         // --- FIN DE LA SIMULACIÓN ---

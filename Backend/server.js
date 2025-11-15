@@ -48,6 +48,8 @@ app.get('/tech-up/test', (req, res) => {
 
 app.use("/tech-up/users", userRoutes);
 
+// Ruta para servir imágenes estáticas no necesitan validacion de permisos
+app.use('/images', express.static('public/images'));
 
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);
