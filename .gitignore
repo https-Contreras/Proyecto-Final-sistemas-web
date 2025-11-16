@@ -2,7 +2,8 @@
 
 # Ignora la carpeta de dependencias.
 **/node_modules/
-
+package-lock.json
+package.json
 # Ignora el archivo de variables de entorno (contiene contraseñas de BD, secretos de JWT, etc.)
 .env
 backend/.env

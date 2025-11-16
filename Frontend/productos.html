@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prodcutos - Tech-Up</title>
+    <link rel="stylesheet" href="/Frontend/CSS/main.css">
+    <script src="/Frontend/js/loadComponents.js"></script>
+    <script src="/Frontend/js/main.js" defer></script>
+</head>
+
+<header class="site-header" id="main-header"></header>
+
+<body>
+    <main class="container">
+        
+        <h2>Todos Nuestros Productos</h2>
+
+        <div class="filter-container">
+            
+            <div class="filter-group">
+                <label for="filter-categoria">Categoría</label>
+                <select id="filter-categoria" name="categoria" class="filter-select">
+                    <option value="all">Todas</option>
+                    <option value="laptops">Laptops</option>
+                    <option value="desktops">Desktops</option>
+                    <option value="accesorios">Accesorios</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="filter-precio">Precio</label>
+                <select id="filter-precio" name="precio" class="filter-select">
+                    <option value="all">Cualquiera</option>
+                    <option value="0-10000">Hasta $10,000</option>
+                    <option value="10001-30000">$10,001 - $30,000</option>
+                    <option value="30001+">Más de $30,000</option>
+                </select>
+            </div>
+
+            <div class="filter-group filter-toggle-group">
+                <input type="checkbox" id="filter-oferta" class="toggle-checkbox">
+                <label for="filter-oferta" class="toggle-track"></label>
+                <span>Solo en oferta</span>
+            </div>
+
+        </div>
+        <section id="product-list" class="product-grid"></section>
+
+    </main>
+
+    <footer class="site-footer" id="main-footer"></footer>
+</body>
+</html>
