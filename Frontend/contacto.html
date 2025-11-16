@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contacto - Tech-Up</title>
+    
+    <link rel="stylesheet" href="/Frontend/CSS/main.css">
+    
+    <script src="/Frontend/js/loadComponents.js" defer></script>
+    <script src="/Frontend/js/contacto.js" defer></script> </head>
+<body>
+
+    <header class="site-header" id="main-header"></header>
+
+    <main class="container">
+        <h2>Contáctanos</h2>
+        <p class="page-description">¿Tienes una duda o quieres una cotización? Llena el formulario o usa uno de nuestros canales directos.</p>
+
+        <div class="contact-wrapper">
+            
+            <form id="contact-form" class="contact-form">
+                
+                <div class="form-group">
+                    <input type="text" id="nombre" name="nombre" required>
+                    <label for="nombre">Nombre Completo</label>
+                </div>
+                
+                <div class="form-group">
+                    <input type="email" id="email" name="email" required>
+                    <label for="email">Correo Electrónico</label>
+                </div>
+                
+                <div class="form-group">
+                    <input type="text" id="asunto" name="asunto" required>
+                    <label for="asunto">Asunto</label>
+                </div>
+
+                <div class="form-group">
+                    <textarea id="mensaje" name="mensaje" rows="5" required></textarea>
+                    <label for="mensaje">Tu Mensaje</label>
+                </div>
+                
+                <p id="form-message"></p>
+
+                <button type="submit" class="submit-btn">Enviar Mensaje</button>
+            </form>
+
+            <aside class="contact-info">
+                <h3>Otros Métodos de Contacto</h3>
+                <p>Si prefieres no usar el formulario, aquí nos encuentras:</p>
+                
+                <strong>Correo Electrónico</strong>
+                <p>ventas@tech-up.com</p>
+
+                <strong>Teléfono</strong>
+                <p>+52 (449) 123-4567</p>
+
+                <strong>Ubicación</strong>
+                <p>Av. Universidad 940, Aguascalientes, Ags.</p>
+
+                <p>¿Buscas una respuesta rápida? Visita nuestras <a href="/Frontend/FAQ.html">Preguntas Frecuentes</a>.</p>
+            </aside>
+
+        </div>
+    </main>
+
+    <footer class="site-footer" id="main-footer"></footer>
+
+</body>
+</html>

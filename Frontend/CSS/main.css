@@ -1,0 +1,1122 @@
+/* * 1. VARIABLES CSS (CUSTOM PROPERTIES)
+ * Tema "Futurista Oscuro" (Default)
+ */
+:root {
+    /* Paleta de colores oscuros */
+    --color-background: #0a0f18; /* Azul noche muy oscuro */
+    --color-surface: #1a202c;    /* Un gris/azul ligeramente más claro para tarjetas/header */
+    --color-text: #e2e8f0;       /* Texto principal (blanco suave) */
+    --color-text-muted: #a0aec0; /* Texto secundario (grisáceo) */
+    
+    /* El color "tech" principal */
+    --color-primary: #00e5ff;    /* Un cian eléctrico/neón */
+    --color-primary-hover: #00b8cc; /* Un cian más oscuro para hover */
+    
+    --color-border: #2d3748;     /* Borde sutil */
+
+    /* Sombras y brillos */
+    --shadow-card: 0 4px 6px rgba(0, 0, 0, 0.1);
+    
+    /* Sombra de "brillo" (glow) con el color primario */
+    --shadow-glow: 0 0 15px rgba(0, 229, 255, 0.3);
+    
+    /* Tipografía base */
+    --font-size-base: 16px;
+}
+
+/* * Tema "Claro" (Modo de alto contraste para accesibilidad)
+ * Se activa agregando la clase 'light-mode' al <body>
+ */
+body.light-mode {
+    --color-background: #ffffff;
+    --color-surface: #f7fafc;
+    --color-text: #2d3748;
+    --color-text-muted: #718096;
+    --color-primary: #007bff; /* Azul estándar para el modo claro */
+    --color-primary-hover: #0056b3;
+    --color-border: #e2e8f0;
+    --shadow-card: 0 4px 6px rgba(0, 0, 0, 0.05);
+    --shadow-glow: 0 0 10px rgba(0, 123, 255, 0.2);
+}
+
+/* * 10. ESTILOS PÁGINA DE INICIO (HOME) (¡NUEVO!)
+ *********************************************/
+
+/* --- 1. Hero Section --- */
+.hero-section {
+    background-color: var(--color-surface);
+    padding: 5rem 1.5rem;
+    text-align: center;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.hero-title {
+    font-size: 2.8rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--color-text);
+}
+
+/* Helper para texto neón */
+.text-primary {
+    color: var(--color-primary);
+}
+
+.hero-subtitle {
+    font-size: 1.2rem;
+    color: var(--color-text-muted);
+    max-width: 600px;
+    margin: 0 auto 2rem auto;
+}
+
+/* Botón del Hero (re-usamos estilo de botón primario) */
+.hero-btn {
+    display: inline-block; /* Para que no ocupe todo el ancho */
+    padding: 0.85rem 1.75rem;
+    background-color: var(--color-primary);
+    color: var(--color-background);
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.hero-btn:hover {
+    background-color: var(--color-primary-hover);
+    box-shadow: var(--shadow-glow);
+}
+
+/* --- 2. Títulos de Sección --- */
+.section-title {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-top: 3.5rem;
+    margin-bottom: 2rem;
+}
+
+/* --- 3. Tarjetas de Categoría --- */
+.category-container {
+    display: grid;
+    /* Grid responsivo (1 a 3 columnas) */
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.category-card {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    text-decoration: none;
+    
+    /* El mismo efecto "mamalón" de las product-card */
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.category-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-glow);
+}
+
+.category-card h4 {
+    color: var(--color-primary);
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+}
+
+.category-card p {
+    color: var(--color-text-muted);
+    font-size: 0.95rem;
+}
+
+/* --- 4. Banner de Ofertas (CTA) --- */
+.cta-banner {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-primary); /* Borde neón */
+    box-shadow: var(--shadow-glow); /* Efecto glow */
+    border-radius: 8px;
+    padding: 3rem 1.5rem;
+    margin: 4rem 0;
+    text-align: center;
+}
+
+.cta-banner h3 {
+    font-size: 2.2rem;
+    color: var(--color-text);
+    margin-bottom: 0.5rem;
+}
+
+.cta-banner p {
+    color: var(--color-text-muted);
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Botón del CTA (invertido) */
+.cta-btn {
+    display: inline-block;
+    padding: 0.8rem 1.5rem;
+    background-color: transparent;
+    color: var(--color-primary);
+    border: 2px solid var(--color-primary);
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.cta-btn:hover {
+    background-color: var(--color-primary);
+    color: var(--color-background); /* Se rellena */
+}
+
+/* * 2. RESET BÁSICO Y ESTILOS GLOBALES
+ */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: var(--font-size-base);
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6;
+    
+    /* Aplicamos los colores base */
+    background-color: var(--color-background);
+    color: var(--color-text);
+    
+    /* Transición suave para el cambio de tema */
+    transition: background-color 0.3s, color 0.3s;
+}
+
+h1, h2, h3 {
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+}
+
+h1 { color: var(--color-primary); } /* Hacemos que el H1 brille */
+h2 { color: var(--color-text); }
+h3 { color: var(--color-primary); } /* Títulos de producto también */
+
+/* * 3. CLASES DE UTILIDAD Y DISEÑO BÁSICO
+ */
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* * 4. ESTILOS DEL HEADER
+ */
+.site-header {
+    background-color: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    padding: 1.25rem 0;
+    /* Sombra ligera para 'levantar' el header */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.site-header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.main-nav a {
+    margin: 0 0.75rem;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.main-nav a:hover,
+.main-nav a.active { /* Para la página actual */
+    color: var(--color-primary);
+}
+
+.header-tools {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+}
+.header-tools > a,
+.header-tools > button {
+    display: inline-block;
+    padding: 0.6rem 1rem;
+    border-radius: 5px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease-in-out;
+    line-height: 1; /* Para alinear el texto y los íconos */
+}
+
+/* Botón de accesibilidad (ghost) */
+#accessibility-btn {
+    background-color: transparent;
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border);
+    font-size: 1.1rem;
+    padding: 0.6rem; /* Más cuadrado */
+}
+
+#accessibility-btn:hover {
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+/* Botón del carrito (ghost) */
+.cart-icon {
+    background-color: transparent;
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border);
+}
+
+.cart-icon:hover {
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 5px rgba(0, 229, 255, 0.3); /* Pequeño glow */
+}
+
+/*boton de registrarse*/
+.register-btn {
+    background-color: transparent;
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border);
+}
+
+.register-btn:hover {
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+
+
+/* Botón de Iniciar Sesión (primario, relleno) */
+.login-btn {
+    background-color: var(--color-primary);
+    color: var(--color-background); /* Texto oscuro (azul noche) para el botón cian */
+    border: 1px solid var(--color-primary);
+}
+
+.login-btn:hover {
+    /* Usamos la variable de hover que ya definimos */
+    background-color: var(--color-primary-hover);
+    border-color: var(--color-primary-hover);
+    box-shadow: var(--shadow-glow); /* Usamos el glow fuerte */
+}
+
+
+/* * 4.2 ESTILOS DE FILTROS 
+ *********************************************/
+
+.filter-container {
+    display: flex;
+    flex-wrap: wrap; /* Para que se vea bien en móviles */
+    align-items: center;
+    gap: 2rem; /* Espacio entre grupos de filtros */
+    
+    background-color: var(--color-surface);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    margin-bottom: 2.5rem;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem; /* Espacio entre etiqueta y menú */
+}
+
+.filter-group label,
+.filter-toggle-group span {
+    color: var(--color-text-muted);
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+/* Estilo para los menús <select> */
+.filter-select {
+    /* Quitamos la apariencia fea del sistema */
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    
+    background-color: var(--color-background); /* Fondo oscuro */
+    color: var(--color-text); /* Texto blanco */
+    border: 1px solid var(--color-primary); /* Borde neón */
+    border-radius: 5px;
+    padding: 0.6rem 2.5rem 0.6rem 1rem; /* Espacio para la flecha */
+    font-size: 0.9rem;
+    cursor: pointer;
+
+    /* Flecha personalizada neón */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%2300e5ff'%3E%3Cpath d='M8 11.207l-4.6-4.6L4.807 5.2 8 8.393l3.193-3.193L12.6 6.607 8 11.207z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1em 1em;
+}
+
+/* Estilo para el Toggle Switch de "Ofertas" */
+.toggle-checkbox {
+    /* Ocultamos el checkbox real */
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+}
+
+.toggle-track {
+    display: block;
+    width: 44px;  /* Ancho del riel */
+    height: 24px; /* Alto del riel */
+    background-color: var(--color-border);
+    border-radius: 12px; /* Totalmente redondeado */
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+/* El círculo que se mueve (el "slider") */
+.toggle-track::before {
+    content: "";
+    position: absolute;
+    width: 18px; /* Tamaño del círculo */
+    height: 18px;
+    background-color: var(--color-text); /* Color apagado */
+    border-radius: 50%;
+    top: 3px;
+    left: 3px;
+    transition: transform 0.2s ease;
+}
+
+/* ESTADO ENCENDIDO (Checked) */
+.toggle-checkbox:checked + .toggle-track {
+    background-color: var(--color-primary); /* Fondo neón */
+}
+
+.toggle-checkbox:checked + .toggle-track::before {
+    transform: translateX(20px); /* Movemos el círculo */
+    background-color: var(--color-surface); /* Color oscuro */
+}
+
+/* * 5. ESTILOS DE PRODUCTOS 
+ */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    padding: 2.5rem 0;
+}
+
+.product-card {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+    
+    /* Transición para el efecto "glow" */
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+/* * Efecto "glow" y "levantar" al pasar el mouse.
+ * Este es el efecto futurista que pediste.
+ */
+.product-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-glow);
+}
+
+.product-image-container img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    display: block;
+    /* Borde sutil, no tan fuerte como la tarjeta */
+    border-bottom: 1px solid var(--color-border);
+}
+
+.product-info {
+    padding: 1.5rem;
+}
+
+.product-description {
+    font-size: 0.95rem;
+    color: var(--color-text-muted);
+    margin-bottom: 1rem;
+}
+
+.product-price {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-text); /* Precio en blanco para contraste */
+    margin-bottom: 1.25rem;
+}
+
+/* Botón estilo "Ghost" que se rellena */
+.add-to-cart-btn {
+    display: block;
+    width: 100%;
+    padding: 0.75rem;
+    
+    background-color: transparent;
+    color: var(--color-primary);
+    border: 2px solid var(--color-primary);
+    
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Efecto de relleno en hover */
+.add-to-cart-btn:hover {
+    background-color: var(--color-primary);
+    color: var(--color-background); /* Invertimos el color */
+}
+/* * 6. ESTILOS DEL FOOTER (Actualizado con más estructura)
+ *********************************************/
+.site-footer {
+    background-color: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+    padding: 3rem 0 2rem 0;
+    margin-top: 4rem;
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+}
+
+.footer-content {
+    display: flex;
+    flex-wrap: wrap; 
+    justify-content: space-between;
+    gap: 2rem; 
+    margin-bottom: 2.5rem;
+}
+
+.footer-section {
+    flex: 1;
+    min-width: 210px; /* Ancho mínimo para las 4 columnas */
+}
+
+.footer-section h4 {
+    color: var(--color-text);
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+/* --- ESTILOS DE LISTA (NUEVO) --- */
+.footer-section ul {
+    list-style: none; /* <-- 1. Quita los bullets */
+    padding: 0;       /* <-- Quita el padding de la lista */
+    margin: 0;
+}
+
+.footer-section ul li {
+    margin-bottom: 0.5rem;
+}
+
+.footer-section a {
+    color: var(--color-text-muted);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.footer-section a:hover {
+    color: var(--color-primary); 
+}
+
+/* --- ESTILOS DE SUSCRIPCIÓN --- */
+.footer-subscribe p {
+    margin-bottom: 1rem;
+}
+
+.footer-subscribe-form {
+    display: flex; 
+    border-radius: 5px;
+    overflow: hidden; 
+    border: 1px solid var(--color-border);
+}
+
+.footer-subscribe-form:focus-within {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-glow);
+}
+
+.footer-email-input {
+    flex: 1;
+    padding: 0.75rem;
+    background-color: var(--color-surface);
+    border: none;
+    color: var(--color-text);
+    font-size: 0.9rem;
+}
+
+.footer-email-input:focus {
+    outline: none;
+}
+
+.footer-subscribe-btn {
+    background-color: var(--color-primary);
+    color: var(--color-background); 
+    border: none;
+    padding: 0 1rem;
+    font-size: 1.5rem; 
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.footer-subscribe-btn:hover {
+    background-color: var(--color-primary-hover);
+}
+
+
+/* --- ESTILOS DE REDES SOCIALES (NUEVO) --- */
+.footer-social {
+    text-align: center; /* <-- 2. Centra los íconos */
+}
+
+.social-icon {
+    display: inline-block;
+    font-size: 1.5rem; 
+    font-weight: bold;
+    color: var(--color-text-muted);
+    margin: 0 0.5rem; /* <-- 3. Agrega separación lateral */
+}
+.social-icon:hover {
+    color: var(--color-primary);
+}
+
+
+/* --- DISCLAIMER Y COPYRIGHT --- */
+.footer-bottom {
+    text-align: center;
+    border-top: 1px solid var(--color-border);
+    padding-top: 2rem;
+    font-size: 0.85rem;
+}
+
+.footer-bottom p {
+    margin: 0.25rem 0; 
+}
+/* * 7. ESTILOS PÁGINA DE CONTACTO 
+ *********************************************/
+
+.page-description {
+    color: var(--color-text-muted);
+    font-size: 1.1rem;
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.contact-wrapper {
+    display: flex;
+    flex-wrap: wrap; /* Se apila en móviles */
+    gap: 3rem;
+    background-color: var(--color-surface);
+    padding: 2.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+}
+
+/* El formulario ocupa más espacio */
+.contact-form {
+    flex: 2; /* Ocupa 2/3 del espacio */
+    min-width: 300px;
+}
+
+/* La información "extra" ocupa menos */
+.contact-info {
+    flex: 1; /* Ocupa 1/3 del espacio */
+    min-width: 250px;
+    background-color: var(--color-background); /* Un fondo más oscuro */
+    padding: 1.5rem;
+    border-radius: 5px;
+}
+
+.contact-info h3 {
+    color: var(--color-primary);
+}
+
+.contact-info strong {
+    display: block;
+    color: var(--color-text);
+    margin-top: 1rem;
+}
+
+.contact-info a {
+    color: var(--color-primary);
+    text-decoration: none;
+}
+.contact-info a:hover {
+    text-decoration: underline;
+}
+
+
+/* * ESTILOS "CHIDOTES" DEL FORMULARIO
+ */
+.form-group {
+    position: relative;
+    margin-bottom: 2rem;
+}
+
+/* Campos de texto y textarea */
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 1rem 0.75rem 0.5rem; /* Padding para dejar espacio al label */
+    background-color: var(--color-background); /* Fondo oscuro */
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group textarea {
+    resize: vertical; /* Permite al usuario ajustar la altura */
+}
+
+/* El label "flotante" */
+.form-group label {
+    position: absolute;
+    top: 0.85rem;
+    left: 0.75rem;
+    color: var(--color-text-muted);
+    pointer-events: none;
+    transition: all 0.2s ease;
+}
+
+/* * La magia: Cuando haces clic (focus) O cuando ya escribiste (valid)
+ * 1. El borde brilla en neón.
+ * 2. El label se encoge y se sube.
+ */
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-glow);
+}
+
+.form-group input:focus + label,
+.form-group textarea:focus + label,
+/* :not(:placeholder-shown) es un truco para "cuando tiene texto" */
+.form-group input:not(:placeholder-shown) + label, 
+.form-group textarea:not(:placeholder-shown) + label {
+    top: 0.25rem;
+    font-size: 0.75rem;
+    color: var(--color-primary);
+}
+/* Fix para que los required no queden feos */
+.form-group input:not(:placeholder-shown) {
+    padding-top: 1rem;
+}
+
+
+/* Botón de envío */
+.submit-btn {
+    display: block;
+    width: 100%;
+    padding: 0.85rem;
+    background-color: var(--color-primary);
+    color: var(--color-background);
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.submit-btn:hover {
+    background-color: var(--color-primary-hover);
+    box-shadow: var(--shadow-glow);
+}
+
+
+/* * 8. ESTILOS PÁGINA FAQ (ACORDEÓN) (¡NUEVO!)
+ *********************************************/
+
+.faq-container {
+    max-width: 800px; /* Hacemos el acordeón más centrado */
+    margin: 2rem auto;
+}
+
+.faq-item {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    overflow: hidden; /* ¡Importante para que max-height funcione! */
+}
+
+/* El botón de la pregunta */
+.faq-question {
+    width: 100%;
+    padding: 1.5rem;
+    
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    background: transparent;
+    border: none;
+    color: var(--color-text);
+    font-size: 1.15rem;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.faq-question:hover {
+    color: var(--color-primary);
+}
+
+/* El ícono '+' */
+.faq-icon {
+    font-size: 1.75rem;
+    color: var(--color-primary);
+    transition: transform 0.3s ease-in-out;
+}
+
+/* El panel de la respuesta (oculto por defecto) */
+.faq-answer {
+    /* La magia del deslizamiento: */
+    max-height: 0;
+    transition: max-height 0.3s ease-out;
+    
+    padding: 0 1.5rem; /* Padding lateral */
+    color: var(--color-text-muted);
+    line-height: 1.7;
+}
+
+/* Damos padding interno al <p> para que no se pegue */
+.faq-answer p {
+    padding-bottom: 1.5rem;
+}
+
+
+/* --- ESTADO ACTIVO (Cuando JS agrega la clase 'active') --- */
+
+.faq-item.active .faq-question {
+    color: var(--color-primary); /* Resalta la pregunta activa */
+}
+
+/* Rota el '+' para que sea una 'x' */
+.faq-item.active .faq-icon {
+    transform: rotate(45deg);
+}
+
+/* Muestra la respuesta */
+.faq-item.active .faq-answer {
+    max-height: 200px; /* Pon un valor más alto si tu texto es muy largo */
+}
+
+
+/* * 9. ESTILOS PÁGINA "SOBRE NOSOTROS" (¡NUEVO!)
+ *********************************************/
+
+/* Estilos para la sección de "Misión" */
+.about-section {
+    background-color: var(--color-surface);
+    padding: 2rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    margin-bottom: 3rem;
+    text-align: center;
+}
+
+.about-section h3 {
+    color: var(--color-primary);
+}
+
+.about-section p {
+    color: var(--color-text-muted);
+    font-size: 1.1rem;
+    line-height: 1.7;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Título de la sección de equipo */
+.team-section h3 {
+    text-align: center;
+    font-size: 1.75rem;
+    color: var(--color-text);
+    margin-bottom: 2rem;
+}
+
+/* Contenedor de las tarjetas */
+.team-container {
+    display: grid;
+    /* Grid responsivo: de 1 a 4 columnas */
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+}
+
+/* La tarjeta de perfil */
+.team-card {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    
+    /* El efecto "glow" y "levantar" */
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.team-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-glow);
+}
+
+/* El círculo para la foto de perfil (placeholder) */
+.team-photo-placeholder {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%; /* Círculo perfecto */
+    background-color: var(--color-background); /* Fondo oscuro */
+    border: 3px solid var(--color-primary); /* Borde neón */
+    margin: 0 auto 1.25rem auto;
+    
+    /* (Puedes poner una <img /> aquí adentro después) */
+}
+
+.team-card h4 {
+    color: var(--color-text);
+    font-size: 1.25rem;
+    margin-bottom: 0.25rem;
+}
+
+/* El "rol" con el color neón */
+.team-role {
+    color: var(--color-primary);
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* * 11. ESTILOS LOGIN & REGISTRO (¡NUEVO!)
+ *********************************************/
+
+/* Centra el formulario */
+.form-container {
+    max-width: 500px;
+    margin: 3rem auto;
+    background-color: var(--color-surface);
+    padding: 2.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+}
+
+.form-container h2 {
+    text-align: center;
+    color: var(--color-primary);
+    margin-bottom: 2rem;
+}
+
+/* Para los links de "olvidé contraseña" y "registro" */
+.form-links {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1.5rem;
+}
+
+.form-links a {
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+    text-decoration: none;
+}
+
+.form-links a:hover {
+    color: var(--color-primary);
+    text-decoration: underline;
+}
+
+/* Para mensajes de error */
+.form-message {
+    text-align: center;
+    color: #ff4d4d; /* Rojo para errores */
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+/* * 12. ESTILOS PÁGINA DE CARRITO (¡NUEVO!)
+ *********************************************/
+
+.cart-wrapper {
+    display: flex;
+    flex-wrap: wrap; /* Se apila en móviles */
+    gap: 2rem;
+}
+
+/* Columna 1: Lista de Items */
+.cart-items-list {
+    flex: 2; /* Ocupa 2/3 del espacio */
+    min-width: 320px;
+}
+
+/* Tarjeta de cada item en el carrito */
+.cart-item {
+    display: flex;
+    flex-wrap: wrap; /* Para que se vea bien en móviles */
+    gap: 1.5rem;
+    
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.cart-item-img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.cart-item-details {
+    flex: 1; /* Crece para ocupar espacio */
+}
+
+.cart-item-title {
+    color: var(--color-text);
+    font-size: 1.15rem;
+}
+
+.cart-item-price {
+    color: var(--color-text-muted);
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+.cart-item-remove {
+    background: none;
+    border: none;
+    color: #ff4d4d; /* Rojo para eliminar */
+    font-size: 0.9rem;
+    cursor: pointer;
+    padding: 0;
+}
+.cart-item-remove:hover {
+    text-decoration: underline;
+}
+
+/* Controles de cantidad y subtotal */
+.cart-item-controls {
+    flex-basis: 150px; /* Ancho base */
+    text-align: right;
+}
+
+.cart-item-qty {
+    width: 70px;
+    padding: 0.5rem;
+    text-align: center;
+    background-color: var(--color-background);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    border-radius: 5px;
+    margin-bottom: 1rem;
+}
+
+.cart-item-subtotal {
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+
+/* Columna 2: Resumen de Compra */
+.cart-summary {
+    flex: 1; /* Ocupa 1/3 del espacio */
+    min-width: 300px;
+    
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 2rem;
+    
+    /* Para que se "pegue" arriba mientras scrolleas (efecto chido) */
+    position: sticky;
+    top: 2rem;
+}
+
+.cart-summary h3 {
+    color: var(--color-primary);
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.summary-line {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.1rem;
+    color: var(--color-text-muted);
+    margin-bottom: 1rem;
+}
+
+.summary-line.total {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-text);
+    border-top: 1px solid var(--color-border);
+    padding-top: 1rem;
+}
+
+/* Grupo del Cupón */
+.coupon-group {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.coupon-group input {
+    flex: 1; /* Ocupa el espacio */
+    padding: 0.6rem;
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: 5px;
+    color: var(--color-text);
+}
+
+.coupon-btn {
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+    padding: 0 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.coupon-btn:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+/* Botón de Finalizar Compra */
+.checkout-btn {
+    width: 100%;
+}
