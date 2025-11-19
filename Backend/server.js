@@ -1,54 +1,57 @@
-const express = require('express');
-const cors = require('cors');
-require('dotenv').config();
-//rutas para usuarios
+const express = require("express");
+const cors = require("cors");
+require("dotenv").config();
+
+// Importar rutas
 const userRoutes = require("./routes/user.routes");
-
-
+const productRoutes = require("./routes/product.routes");
+const categoryRoutes = require("./routes/category.routes");
 
 const app = express();
-const ALLOWED_ORIGINS = [
-    'http://localhost:5500',
-    'http://127.0.0.1:5500',
-];
+const ALLOWED_ORIGINS = ["http://localhost:5500", "http://127.0.0.1:5500"];
 
-app.use(cors({ 
+app.use(
+  cors({
     origin: function (origin, callback) {
-    
-    if (!origin || ALLOWED_ORIGINS.includes(origin)) {
-      return callback(null, true); // null = sin error, true = permitido
-    }
-    // Si el origen no está permitido, se rechaza la solicitud con un mensaje de error.
-    return callback(new Error('Not allowed by CORS: ' + origin));
-},
+      if (!origin || ALLOWED_ORIGINS.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error("Not allowed by CORS: " + origin));
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    optionsSuccessStatus: 200,
+  })
+);
 
-  // Especifica los métodos HTTP que este servidor aceptará.
-methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-
-  // Algunos navegadores antiguos esperan un código 200 (en lugar de 204) en respuestas "preflight".
-optionsSuccessStatus: 200
-}));
-// Permite peticiones de otros orígenes (tu frontend)
-app.use(express.json()); // Permite al servidor entender JSON que viene del cliente 
-app.use(express.urlencoded({ extended: true })); // Permite entender formularios
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 const PORT = process.env.PORT || 3000;
 
-
-
 // Ruta de prueba
-app.get('/tech-up/test', (req, res) => {
-    // El servidor SIEMPRE responde con JSON 
-    res.json({
-        message: '¡Bienvenido a la API de Tech-Up!',
-        success: true
-    });
+app.get("/tech-up/test", (req, res) => {
+  res.json({
+    message: "¡Bienvenido a la API de Tech-Up!",
+    success: true,
+    endpoints: {
+      users: "/tech-up/users",
+      products: "/tech-up/api/products",
+      categories: "/tech-up/api/categories",
+    },
+  });
 });
 
-
+// Registrar rutas
 app.use("/tech-up/users", userRoutes);
-
+app.use("/tech-up/api/products", productRoutes);
+app.use("/tech-up/api/categories", categoryRoutes);
 
 app.listen(PORT, () => {
-    console.log(`Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+  console.log(
+    `📦 API Productos: http://localhost:${PORT}/tech-up/api/products`
+  );
+  console.log(
+    `📂 API Categorías: http://localhost:${PORT}/tech-up/api/categories`
+  );
 });
