@@ -5,25 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tech-Up | Panel de Administración</title>
     
-    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="css/main.css">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <script src="scripts/loadComponents.js" defer></script>
-    <script src="scripts/admin.js" defer></script> <script>
-        (function() {
-            const user = localStorage.getItem('userName');
-            const role = localStorage.getItem('userRole'); // Asumiremos que guardamos el rol
-            // Validación de Seguridad Básica (Frontend)
-            if (!user || role !== 'admin') {
-                window.location.href = 'login.html';
-            }
-            const userKey = user ? user.replace(/\s+/g, '_') : 'guest';
-            const savedTheme = localStorage.getItem(`theme_${userKey}`);
-            if (savedTheme === 'light') document.documentElement.classList.add('light-mode');
-        })();
-    </script>
+    <script src="js/admin-logic.js"></script>
+    <script src="js/loadComponents.js" defer></script>
+    
 </head>
 <body>
 

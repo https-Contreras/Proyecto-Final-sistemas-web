@@ -73,6 +73,16 @@ async function updateUserPasswordAndClearToken(userId, newPasswordHash) {
         'UPDATE users SET contrasena = ?, reset_token = NULL, reset_token_expires = NULL WHERE id = ?',
         [newPasswordHash, userId]
     );
+};
+
+
+//Busca un usuario por ID (para verificar token/rol)
+async function findUserById(id) {
+    const [rows] = await pool.execute(
+        'SELECT id, nombre, correo, rol FROM users WHERE id = ?',
+        [id]
+    );
+    return rows[0];
 }
 
 module.exports = {
@@ -82,5 +92,6 @@ module.exports = {
     resetUserLoginAttempts,
     savePasswordResetToken,
     findUserByResetToken,
-    updateUserPasswordAndClearToken
+    updateUserPasswordAndClearToken,
+    findUserById
 }

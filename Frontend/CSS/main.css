@@ -1591,23 +1591,41 @@ html.light-mode .site-footer {
     .g-recaptcha {
         transform: scale(0.85);
     }
+}
 
-/* --- ESTILOS PARA EL PANEL DE ADMINISTRACIÓN (TABS) --- */
+/* * 15. ESTILOS ADMIN PANEL (¡NUEVO!)
+ *********************************************/
 
-.admin-nav {
+.admin-container {
+    margin-top: 2rem;
+    margin-bottom: 4rem;
+}
+
+.admin-header {
     display: flex;
-    gap: 1.5rem;
-    padding-bottom: 0;
-    margin-bottom: 1.5rem !important;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+/* Pestañas de Navegación */
+.admin-tabs {
+    display: flex;
+    gap: 1rem;
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: 2rem;
 }
 
 .admin-tab {
-    padding: 0.5rem 0;
+    background: transparent;
+    border: none;
     color: var(--color-text-muted);
-    text-decoration: none;
-    font-weight: 500;
-    transition: color 0.2s ease, border-bottom 0.2s ease;
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
     border-bottom: 3px solid transparent;
+    transition: all 0.2s ease;
 }
 
 .admin-tab:hover {
@@ -1615,99 +1633,236 @@ html.light-mode .site-footer {
 }
 
 .admin-tab.active {
-    color: var(--color-primary); 
-    border-bottom: 3px solid var(--color-primary); 
-    font-weight: 600;
+    color: var(--color-primary);
+    border-bottom-color: var(--color-primary);
 }
 
-/* ************************************************************* */
-/* --- ESTILOS CRUD (Altas y Bajas) - REVERTIDOS A ESTILO GHOST --- */
-/* ************************************************************* */
+.admin-section {
+    display: none; /* Ocultas por defecto */
+    animation: fadeIn 0.3s ease;
+}
+.admin-section.active {
+    display: block;
+}
 
-/* Ajuste del botón principal de envío/guardar para incluir iconos */
-.submit-btn {
-    display: flex; /* Cambiado a flex para alinear icono y texto */
+/* Tabla de Datos "Chidota" */
+.table-wrapper {
+    overflow-x: auto;
+    background-color: var(--color-surface);
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+}
+
+.data-table {
     width: 100%;
-    padding: 0.85rem 1.8rem;
+    border-collapse: collapse;
+    min-width: 700px;
+}
+
+.data-table th {
+    background-color: var(--color-background);
+    color: var(--color-text-muted);
+    font-weight: 600;
+    text-align: left;
+    padding: 1rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.data-table td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text);
+}
+
+.data-table tr:last-child td {
+    border-bottom: none;
+}
+
+.data-table img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+/* Botones de acción en tabla */
+.action-btn {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 1.1rem;
+    margin-right: 0.5rem;
+    transition: transform 0.2s;
+}
+.btn-edit { color: #f1c40f; }
+.btn-delete { color: #ff4d4d; }
+.action-btn:hover { transform: scale(1.2); }
+
+/* Modal (Ventana Emergente) */
+.modal {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.7); /* Fondo oscuro */
+    z-index: 2000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background-color: var(--color-surface);
+    padding: 2.5rem;
+    border-radius: 10px;
+    border: 1px solid var(--color-border);
+    width: 90%;
+    max-width: 600px;
+    position: relative;
+    box-shadow: var(--shadow-glow);
+}
+
+.close-btn {
+    position: absolute;
+    top: 1rem; right: 1.5rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--color-text-muted);
+}
+.close-btn:hover { color: var(--color-primary); }
+
+/* Estadísticas */
+.charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.chart-card {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.chart-placeholder {
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: var(--color-text-muted);
+    border: 2px dashed var(--color-border);
+    margin-top: 1rem;
+    border-radius: 5px;
+}
+
+.stat-number {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin: 1rem 0;
+}
+
+/* Animación simple */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* * 16. ESTILOS HEADER USUARIO LOGUEADO (MEJORADO)
+ *********************************************/
+
+/* El contenedor de las herramientas (Accessibility, Cart, User) */
+.header-tools {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem; /* Espacio uniforme entre iconos */
+}
+
+/* Contenedor nuevo para Admin + User Info */
+.user-controls {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    border-left: 1px solid var(--color-border); /* Línea divisoria sutil */
+    padding-left: 1.5rem;
+    height: 40px; /* Altura para centrar la línea */
+}
+
+/* Botón de Admin "Pill" (Pastilla) */
+.admin-pill-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: rgba(0, 229, 255, 0.1); /* Fondo neón muy transparente */
+    color: var(--color-primary);
+    border: 1px solid var(--color-primary);
+    padding: 0.4rem 1rem;
+    border-radius: 50px; /* Bordes redondos */
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    white-space: nowrap; /* Que no se rompa el texto */
+}
+
+.admin-pill-btn:hover {
     background-color: var(--color-primary);
     color: var(--color-background);
-    border: none;
-    border-radius: 8px; /* Ajuste para coincidir con la nueva apariencia */
-    font-size: 1.1rem;
-    font-weight: 700; /* Ajuste para coincidir con la nueva apariencia */
+    box-shadow: 0 0 10px rgba(0, 229, 255, 0.4); /* Glow */
+}
+
+/* Grupo de Info de Usuario */
+.user-info-group {
+    display: flex;
+    flex-direction: column; /* Nombre arriba, salir abajo */
+    align-items: flex-end; /* Alineado a la derecha */
+    line-height: 1.2;
+}
+
+.user-greeting {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--color-text);
+}
+
+/* Botón de Salir (Rediseñado: Sutil pero visible) */
+.logout-link {
+    background: var(--color-primary);
+    border: 1px solid transparent; /* Borde invisible por defecto */
+    color: var(--color-text-muted);
+    font-size: 0.8rem;
+    font-weight: 500;
     cursor: pointer;
+    
+    /* Un poco de padding para que parezca botón al hacer hover */
+    padding: 0.25rem 0.6rem; 
+    border-radius: 4px;
+    
     transition: all 0.2s ease;
+    display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
-    box-shadow: 0 4px 15px rgba(0, 229, 255, 0.3); 
+    gap: 0.4rem;
+    margin-top: 4px; /* Separación del nombre */
 }
 
-.submit-btn:hover {
-    background-color: var(--color-primary-hover);
-    box-shadow: var(--shadow-glow);
-    transform: translateY(-2px);
+/* El ícono siempre tendrá un tono rojo suave para identificarlo rápido */
+.logout-link i {
+    color: #ff6b6b; /* Rojo pastel suave */
+    font-size: 0.85rem;
+    transition: color 0.2s ease;
 }
 
-/* Clase general para botones pequeños en la tabla */
-.small-btn {
-    display: inline-flex;
-    width: auto !important;
-    padding: 0.6rem 1.2rem;
-    font-size: 0.9rem;
-    gap: 0.5rem; 
-    border-radius: 5px;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    line-height: 1;
-    transition: all 0.2s ease;
-    background-color: transparent; /* Fondo transparente por defecto */
+/* Efecto Hover: Fondo rojo muy tenue y texto más vivo */
+.logout-link:hover {
+    background-color: rgba(255, 77, 77, 0.1); /* Fondo rojo casi transparente */
+    color: #ff4d4d; /* Texto rojo vivo */
+    border-color: rgba(255, 77, 77, 0.2); /* Borde sutil */
+    text-decoration: none; /* Quitamos el subrayado */
 }
 
-/*  BOTÓN EDITAR (GHOST NEÓN) */
-.edit-btn {
-    color: var(--color-primary);
-    border: 2px solid var(--color-primary); 
-    background-color: transparent;
-}
-
-.edit-btn:hover {
-    background-color: var(--color-primary); /* Rellena en hover */
-    color: var(--color-background);
-    border-color: var(--color-primary-hover);
-    box-shadow: 0 0 10px rgba(0, 229, 255, 0.5); /* Glow */
-   
-}
-
-/*  BOTÓN ELIMINAR (GHOST ROJO) */
-.delete-btn {
-    color: var(--color-danger); /* Rojo */
-    border: 2px solid var(--color-danger); 
-    background-color: transparent;
-}
-
-.delete-btn:hover {
-    background-color: var(--color-danger); /* Rellena en hover */
-    color: var(--color-background);
-    border-color: var(--color-danger-hover);
-    box-shadow: 0 0 10px rgba(255, 77, 77, 0.5); /* Glow rojo */
-}
-
-
-/* --- ADAPTACIÓN DE SWEETALERT2 PARA TEMA OSCURO --- */
-.dark-alert-popup {
-    background-color: var(--color-surface) !important;
-    border: 1px solid var(--color-border) !important;
-    color: var(--color-text) !important;
-}
-.dark-alert-popup .swal2-title {
-    color: var(--color-primary) !important;
-}
-.dark-alert-popup .swal2-content {
-    color: var(--color-text-muted) !important;
-}
-.dark-alert-popup .swal2-actions button {
-    font-weight: 600 !important;
-}
+.logout-link:hover i {
+    color: #ff4d4d; /* El ícono también se enciende */
 }

@@ -30,40 +30,102 @@ async function loadComponent(url, elementId) {
  * Revisa si hay un usuario logueado en localStorage
  * y actualiza el header.
  */
-function checkLoginStatus() {
-    const userName = localStorage.getItem('userName');
-    
-    if (userName) {
-        // Buscamos el contenedor de botones dentro del header cargado
-        const headerTools = document.querySelector('#main-header .header-tools');
-        
-        if (headerTools) {
-            const loginBtn = headerTools.querySelector('.login-btn');
-            const registerBtn = headerTools.querySelector('.register-btn');
+// ... (la función loadComponent se queda igual) ...
+/**
+ * Revisa si hay un usuario logueado VERIFICANDO con el Backend
+ */
+async function checkLoginStatus() {
+    // 1. Solo necesitamos el token del storage
+    const token = localStorage.getItem('userToken');
 
-            // Solo si existen los botones originales, hacemos el reemplazo
-            if (loginBtn && registerBtn) {
-                // 1. Crear mensaje de bienvenida
-                const welcomeSpan = document.createElement('span');
-                welcomeSpan.className = 'header-username';
-                welcomeSpan.textContent = `Hola, ${userName.split(' ')[0]}`; // Solo el primer nombre
+    if (!token) return; // Si no hay token, es un invitado
 
-                // 2. Crear botón de logout
-                const logoutButton = document.createElement('button');
-                logoutButton.id = 'logout-btn';
-                logoutButton.className = 'logout-btn';
-                logoutButton.textContent = 'Cerrar Sesión';
-
-                // 3. Reemplazar los elementos viejos por los nuevos
-                loginBtn.replaceWith(welcomeSpan);
-                registerBtn.replaceWith(logoutButton);
-
-                // 4. Activamos el evento del nuevo botón
-                addLogoutEvent();
+    try {
+        // 2. Preguntamos al Backend: "¿Quién es este usuario?"
+        const response = await fetch('http://localhost:3000/tech-up/users/verify', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`, // Enviamos el token
+                'Content-Type': 'application/json'
             }
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+            // --- SESIÓN VÁLIDA ---
+            const user = data.user;
+            
+            // Actualizamos nombre en storage por si cambió, pero NO el rol (ese se usa en memoria)
+            localStorage.setItem('userName', user.nombre);
+
+            // Actualizamos la UI
+            actualizarHeaderUI(user);
+
+        } else {
+            // --- TOKEN INVÁLIDO O EXPIRADO ---
+            console.warn("Token expirado o inválido. Cerrando sesión.");
+            logoutAutomatico();
         }
+
+    } catch (error) {
+        console.error("Error verificando sesión:", error);
+        // Opcional: si el server está caído, ¿qué hacemos? 
+        // Por seguridad, podríamos no mostrar nada de usuario.
     }
 }
+
+/*
+ * Función auxiliar para pintar el header con estilo
+ */
+function actualizarHeaderUI(user) {
+    const headerTools = document.querySelector('#main-header .header-tools');
+    if (!headerTools) return;
+
+    const loginBtn = headerTools.querySelector('.login-btn');
+    const registerBtn = headerTools.querySelector('.register-btn');
+
+    // Si encontramos los botones de login (significa que no hemos actualizado aún)
+    if (loginBtn || registerBtn) {
+        
+        // 1. Limpiamos los botones viejos de login/registro
+        if (loginBtn) loginBtn.remove();
+        if (registerBtn) registerBtn.remove();
+
+        // 2. Creamos un contenedor para las herramientas de usuario
+        const userContainer = document.createElement('div');
+        userContainer.className = 'user-controls';
+
+        // --- A. Botón de Admin (Si corresponde) ---
+        if (user.rol === 'admin') {
+            const adminBtn = document.createElement('a');
+            adminBtn.href = 'vistaAdmin.html';
+            adminBtn.className = 'admin-pill-btn'; // Clase nueva
+            adminBtn.innerHTML = '<i class="fas fa-cog"></i> Panel Admin'; // Icono
+            userContainer.appendChild(adminBtn);
+        }
+
+        // --- B. Información del Usuario y Logout ---
+        const userInfoDiv = document.createElement('div');
+        userInfoDiv.className = 'user-info-group';
+        
+        userInfoDiv.innerHTML = `
+            <span class="user-greeting">Hola, ${user.nombre.split(' ')[0]}</span>
+            <button id="logout-btn" class="logout-link" title="Cerrar Sesión">
+                <i class="fas fa-sign-out-alt"></i> Salir
+            </button>
+        `;
+
+        userContainer.appendChild(userInfoDiv);
+        
+        // 3. Agregamos todo al header
+        headerTools.appendChild(userContainer);
+
+        // 4. Activamos el evento del botón nuevo
+        addLogoutEvent();
+    }
+};
+
 
 /**
  * Agrega la funcionalidad de cerrar sesión al botón generado dinámicamente

@@ -195,6 +195,45 @@ exports.resetPassword = async (req, res) => {
     }
 };
 
+//para verificar rol de usuario admin
+exports.verifyUser = async (req, res) => {
+    try {
+        // 1. Obtener el token del header "Authorization"
+        const authHeader = req.headers['authorization'];
+        const token = authHeader && authHeader.split(' ')[1]; // "Bearer TOKEN"
+
+        if (!token) {
+            return res.status(401).json({ message: "No autorizado" });
+        }
+
+        // 2. Verificar el Token
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        
+        // 3. Consultar la BD para obtener el rol REAL y ACTUALIZADO
+        // (No confiamos solo en el token, vamos a la fuente de verdad)
+        const usuario = await dbModel.findUserById(decoded.userId);
+
+        if (!usuario) {
+            return res.status(404).json({ message: "Usuario no encontrado" });
+        }
+
+        // 4. Devolver datos seguros (sin password)
+        res.status(200).json({
+            success: true,
+            user: {
+                id: usuario.id,
+                nombre: usuario.nombre,
+                email: usuario.email,
+                rol: usuario.rol // <--- AQUÍ VA EL ROL REAL
+            }
+        });
+
+    } catch (error) {
+        console.error("Error verificando token:", error);
+        return res.status(403).json({ message: "Token inválido o expirado" });
+    }
+};
+
 //para formulario de contacto
 exports.contact = async(req,res)=>{
     try {
