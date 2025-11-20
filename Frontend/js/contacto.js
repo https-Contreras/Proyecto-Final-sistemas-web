@@ -6,17 +6,25 @@ document.addEventListener('DOMContentLoaded', () => {
         event.preventDefault();
 
         const submitBtn = contactForm.querySelector('.submit-btn');
-        const msgElement = document.getElementById('form-message');
-
-        // ✅ VALIDAR CAPTCHA
+        
+        // ✅ VALIDAR CAPTCHA CON ALERTA
         const captchaResponse = grecaptcha.getResponse();
         
         if (!captchaResponse) {
-            msgElement.textContent = 'Por favor, completa el CAPTCHA.';
-            msgElement.style.color = '#ff4d4d';
+            Swal.fire({
+                title: '¡Atención!',
+                text: 'Por favor, completa el CAPTCHA para continuar.',
+                icon: 'warning',
+                confirmButtonText: 'Entendido',
+                confirmButtonColor: '#667eea', // Tu color primario
+                background: '#1a202c', // Fondo oscuro estilo Tech-Up
+                color: '#fff'
+            });
             return;
         }
 
+        // UI: Estado de carga
+        const originalBtnText = submitBtn.textContent;
         submitBtn.textContent = 'Enviando...';
         submitBtn.disabled = true;
 
@@ -25,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
             email: document.getElementById('email').value,
             asunto: document.getElementById('asunto').value,
             mensaje: document.getElementById('mensaje').value,
-            captchaToken: captchaResponse // ← Incluir el token
+            captchaToken: captchaResponse
         };
 
         try {
@@ -40,23 +48,42 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
 
             if (response.ok) {
-                msgElement.textContent = "¡Mensaje enviado!";
-                msgElement.style.color = "var(--color-primary)";
+                // ✅ ÉXITO
+                Swal.fire({
+                    title: '¡Mensaje Enviado!',
+                    text: 'Hemos recibido tu mensaje correctamente. Te contactaremos pronto.',
+                    icon: 'success',
+                    timer: 3000,
+                    showConfirmButton: false,
+                    background: '#1a202c',
+                    color: '#fff'
+                });
+
                 contactForm.reset();
-                grecaptcha.reset();
+                grecaptcha.reset(); // Importante: resetear captcha para nuevo envío
             } else {
-                msgElement.textContent = data.message || "Error al enviar el mensaje";
-                msgElement.style.color = '#ff4d4d';
-                grecaptcha.reset();
+                // ❌ ERROR DEL SERVIDOR
+                throw new Error(data.message || "Error al enviar el mensaje");
             }
 
         } catch (error) {
-            msgElement.textContent = 'Error de conexión.';
-            msgElement.style.color = '#ff4d4d';
+            // ❌ ERROR DE CONEXIÓN O CATCH
+            console.error(error);
+            Swal.fire({
+                title: '¡Error!',
+                text: error.message || 'Hubo un problema de conexión. Inténtalo más tarde.',
+                icon: 'error',
+                confirmButtonText: 'Cerrar',
+                confirmButtonColor: '#ff4d4d',
+                background: '#1a202c',
+                color: '#fff'
+            });
+            
             grecaptcha.reset();
+        } finally {
+            // Restaurar el botón pase lo que pase
+            submitBtn.textContent = originalBtnText;
+            submitBtn.disabled = false;
         }
-
-        submitBtn.textContent = 'Enviar Mensaje';
-        submitBtn.disabled = false;
     });
 });

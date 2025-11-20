@@ -3,6 +3,8 @@ const router = express.Router();
 const userController = require("../controllers/userController");
 const { verifyCaptcha } = require('../middleware/captcha.middleware'); // ← Ruta correcta
 
+// POST /tech-up/users/login - Autenticación de usuarios
+router.post("/login", userController.login);
 
 router.post("/login", verifyCaptcha, userController.login);
 router.post('/register', verifyCaptcha, userController.register);

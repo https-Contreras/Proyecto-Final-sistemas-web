@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 
 // Escribe aquí la contraseña que SÍ te sabes
-const miPasswordPlano = 'jael1234'; 
+const miPasswordPlano = 'raul1234'; 
 
 // Esta función la encripta
 async function generarHash() {
