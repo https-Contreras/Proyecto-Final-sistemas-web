@@ -1,36 +1,115 @@
+// 📁 Frontend/js/main.js
+
+// ============================================
+// 🔐 FUNCIONES DE AUTENTICACIÓN
+// ============================================
+
+function getAuthToken() {
+    return localStorage.getItem('authToken');
+}
+
+function isUserLoggedIn() {
+    const token = getAuthToken();
+    return token !== null && token !== '';
+}
+
+// ============================================
+// 🛒 FUNCIONES DEL CARRITO
+// ============================================
+
+function getLocalCart() {
+    const cart = localStorage.getItem('cart');
+    return cart ? JSON.parse(cart) : { items: [], cupon_aplicado: null, descuento: 0 };
+}
+
+function saveLocalCart(cart) {
+    localStorage.setItem('cart', JSON.stringify(cart));
+}
+
+function addToLocalCart(producto) {
+    const cart = getLocalCart();
+    
+    const existingIndex = cart.items.findIndex(item => item.product_id === producto.product_id);
+    
+    if (existingIndex !== -1) {
+        cart.items[existingIndex].cantidad += producto.cantidad;
+    } else {
+        cart.items.push(producto);
+    }
+    
+    saveLocalCart(cart);
+}
+
+/**
+ * Agregar producto al carrito (con validación del backend)
+ */
+async function agregarAlCarrito(productId, productData) {
+    // Verificar que el usuario esté logueado
+    if (!isUserLoggedIn()) {
+        alert('⚠️ Debes iniciar sesión para agregar productos al carrito');
+        window.location.href = '/Frontend/login.html';
+        return;
+    }
+    
+    try {
+        // Validar con el backend
+        const response = await fetch('http://localhost:3000/tech-up/api/cart/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${getAuthToken()}`
+            },
+            body: JSON.stringify({
+                product_id: productId,
+                cantidad: 1
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok && data.success) {
+            // Agregar al localStorage
+            addToLocalCart(data.producto);
+            
+            alert(`✅ ${data.producto.nombre} agregado al carrito`);
+        } else {
+            alert('⚠️ ' + data.message);
+        }
+        
+    } catch (error) {
+        console.error('Error al agregar al carrito:', error);
+        alert('❌ Error al agregar el producto. Por favor, intenta de nuevo.');
+    }
+}
+
+// ============================================
+// 📦 FUNCIONES DE PRODUCTOS
+// ============================================
+
 // 1. Espera a que todo el HTML esté cargado
 document.addEventListener('DOMContentLoaded', () => {
     
     // Llama a la función principal para cargar y mostrar productos
     cargarProductos();
     
-    
     // ##### INICIO DE LA SECCIÓN DE FILTROS #####
     
-    // 1. Seleccionamos los filtros
     const filtroCategoria = document.getElementById('filter-categoria');
     const filtroPrecio = document.getElementById('filter-precio');
     const filtroOferta = document.getElementById('filter-oferta');
 
-    // 2. Creamos una función para "escuchar" los cambios
     function handleFilterChange() {
         const filtrosSeleccionados = {
             categoria: filtroCategoria.value,
             precio: filtroPrecio.value,
-            oferta: filtroOferta.checked // .checked nos da true o false
+            oferta: filtroOferta.checked
         };
         
         console.log("FILTROS CAMBIARON:", filtrosSeleccionados);
         
-        // ¡PRÓXIMO PASO!
-        // Aquí es donde llamaríamos de nuevo a la API o
-        // filtraríamos los productos que ya tenemos.
-        // Ej: cargarProductos(filtrosSeleccionados);
+        cargarProductos(filtrosSeleccionados);
     }
 
-    // 3. Agregamos los 'listeners'
-    // (Nos aseguramos de que existan antes de agregar el listener,
-    //  así este script no dará error en otras páginas como index.html)
     if (filtroCategoria) {
         filtroCategoria.addEventListener('change', handleFilterChange);
     }
@@ -44,107 +123,130 @@ document.addEventListener('DOMContentLoaded', () => {
     // ##### FIN DE LA SECCIÓN DE FILTROS #####
 });
 
-
 /**
- * 2. Carga los productos (simulando una llamada a la API)
- * * Usamos async/await para simular cómo funcionará 'fetch'
- * cuando conectemos el backend real.
+ * 2. Carga los productos desde el backend
  */
-async function cargarProductos() {
+async function cargarProductos(filtros = {}) {
     
-    // Verificamos que el contenedor de productos exista en esta página
     const productListElement = document.getElementById('product-list');
     if (!productListElement) {
-        // Si no existe (ej. estamos en index.html), no hacemos nada.
         return;
     }
 
     try {
-        // --- SIMULACIÓN DE DATOS DEL BACKEND ---
-        // Cuando tu backend esté listo, reemplazarás todo este bloque
-        // por algo como:
-        // const respuesta = await fetch('http://tu-api.com/api/productos');
-        // const productos = await respuesta.json();
-
-        // Por ahora, usamos datos "quemados" (hardcodeados)
-        const productosSimulados = [
-            {
-                id: 1,
-                nombre: "Laptop Gamer Avanzada",
-                descripcion: "Core i5, 32GB RAM, M.2 1TB, RTX 4060",
-                precio: 48500.00,
-                imagen: "http://localhost:3000/images/laptop-gamer.png" // Asegúrate de tener esta imagen de prueba
-            },
-            {
-                id: 2,
-                nombre: "Estación de Trabajo (Desktop)",
-                descripcion: "Threadripper, 32GB RAM, SSD 2TB, Quadro RTX A4000",
-                precio: 89900.00,
-                imagen: "http://localhost:3000/images/desktop-workstation.png"
-            },
-            {
-                id: 3,
-                nombre: "Monitor Curvo Ultrawide 49\"",
-                descripcion: "Panel OLED, 240Hz, 1ms respuesta",
-                precio: 21200.00,
-                imagen: "http://localhost:3000/images/monitor-ultrawide.png"
-            },
-            {
-                id: 4,
-                nombre: "Teclado Mecánico RGB",
-                descripcion: "Switches ópticos, layout 60%, switches Cherry MX Red",
-                precio: 3100.00,
-                imagen: "http://localhost:3000/images/teclado-mecanico.png"
-            }
-        ];
-        // --- FIN DE LA SIMULACIÓN ---
+        // Construir query params para los filtros
+        let queryParams = '';
+        if (filtros.categoria && filtros.categoria !== 'all') {
+            queryParams += `?categoria=${filtros.categoria}`;
+        }
+        if (filtros.oferta) {
+            queryParams += queryParams ? '&oferta=1' : '?oferta=1';
+        }
         
-        // 3. Llama a la función que "dibuja" los productos en el HTML
-        mostrarProductos(productosSimulados);
+        // 🔄 LLAMAR A LA API REAL DEL BACKEND
+        const response = await fetch(`http://localhost:3000/tech-up/api/productos${queryParams}`);
+        const data = await response.json();
+        
+        if (response.ok && data.success) {
+            let productos = data.productos;
+            
+            // Filtrar por precio en el frontend (opcional)
+            if (filtros.precio && filtros.precio !== 'all') {
+                productos = filtrarPorPrecio(productos, filtros.precio);
+            }
+            
+            mostrarProductos(productos);
+        } else {
+            console.error('Error al cargar productos:', data.message);
+            productListElement.innerHTML = '<p>Error al cargar productos</p>';
+        }
 
     } catch (error) {
         console.error("Error al cargar los productos:", error);
+        productListElement.innerHTML = '<p>Error de conexión. Intenta de nuevo más tarde.</p>';
     }
 }
 
+/**
+ * Filtrar productos por rango de precio
+ */
+function filtrarPorPrecio(productos, rangoPrecio) {
+    if (rangoPrecio === '0-10000') {
+        return productos.filter(p => p.precio <= 10000);
+    } else if (rangoPrecio === '10001-30000') {
+        return productos.filter(p => p.precio > 10000 && p.precio <= 30000);
+    } else if (rangoPrecio === '30001+') {
+        return productos.filter(p => p.precio > 30000);
+    }
+    return productos;
+}
 
 /**
  * 4. Dibuja las tarjetas de producto en el DOM
- * @param {Array} productos - El listado de productos a mostrar
  */
 function mostrarProductos(productos) {
-    // 1. Obtenemos el contenedor donde irán los productos
     const productListElement = document.getElementById('product-list');
     
-    // 2. Limpiamos cualquier contenido previo (como un "Cargando...")
     productListElement.innerHTML = '';
 
-    // 3. Recorremos el arreglo de productos
+    if (productos.length === 0) {
+        productListElement.innerHTML = '<p>No se encontraron productos con los filtros seleccionados.</p>';
+        return;
+    }
+
     productos.forEach(producto => {
         
-        // 4. Creamos un nuevo elemento 'article' por cada producto
         const card = document.createElement('article');
-        card.classList.add('product-card'); // Le ponemos la clase CSS
+        card.classList.add('product-card');
 
-        // 5. Generamos el HTML interno de la tarjeta (¡Esta es la magia!)
-        // Usamos template literals (comillas ``) para insertar variables
+        // Badge de oferta si aplica
+        const badgeOferta = producto.en_oferta ? '<span class="badge-oferta">🔥 OFERTA</span>' : '';
+        
+        // Stock disponible
+        const stockInfo = producto.stock > 0 
+            ? `<p class="product-stock">Stock: ${producto.stock}</p>` 
+            : '<p class="product-stock out-of-stock">Agotado</p>';
+
         card.innerHTML = `
+            ${badgeOferta}
             <div class="product-image-container">
                 <img src="${producto.imagen}" alt="${producto.nombre}">
             </div>
             <div class="product-info">
                 <h3 class="product-title">${producto.nombre}</h3>
-                <p class="product-description">${producto.descripcion}</p>
+                <p class="product-description">${producto.descripcion || ''}</p>
                 
-                <p class="product-price">$${producto.precio.toFixed(2)}</p>
+                <p class="product-price">$${parseFloat(producto.precio).toFixed(2)}</p>
+                ${stockInfo}
                 
-                <button class="add-to-cart-btn" data-product-id="${producto.id}">
-                    Agregar al carrito
+                <button class="add-to-cart-btn" 
+                        data-product-id="${producto.product_id}"
+                        data-product-name="${producto.nombre}"
+                        data-product-price="${producto.precio}"
+                        data-product-image="${producto.imagen}"
+                        data-product-stock="${producto.stock}"
+                        ${producto.stock === 0 ? 'disabled' : ''}>
+                    ${producto.stock === 0 ? 'Sin Stock' : 'Agregar al carrito'}
                 </button>
             </div>
         `;
 
-        // 6. Añadimos la tarjeta recién creada al contenedor en el HTML
         productListElement.appendChild(card);
+    });
+    
+    // ⭐ AGREGAR EVENT LISTENERS A LOS BOTONES DE AGREGAR AL CARRITO
+    document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+            const productId = e.target.dataset.productId;
+            const productData = {
+                product_id: productId,
+                nombre: e.target.dataset.productName,
+                precio: parseFloat(e.target.dataset.productPrice),
+                imagen: e.target.dataset.productImage,
+                stock_disponible: parseInt(e.target.dataset.productStock)
+            };
+            
+            await agregarAlCarrito(productId, productData);
+        });
     });
 }

@@ -1,8 +1,130 @@
 // 📁 Frontend/js/carrito.js
 
-document.addEventListener('DOMContentLoaded', () => {
-    const cartListElement = document.getElementById('cart-items-list');
+// ============================================
+// 🔐 FUNCIONES DE AUTENTICACIÓN
+// ============================================
+
+/**
+ * Obtener el token JWT del localStorage
+ */
+function getAuthToken() {
+    return localStorage.getItem('authToken');
+}
+
+/**
+ * Verificar si el usuario está logueado
+ */
+function isUserLoggedIn() {
+    const token = getAuthToken();
+    return token !== null && token !== '';
+}
+
+/**
+ * Redirigir al login si no está autenticado
+ */
+function requireAuth() {
+    if (!isUserLoggedIn()) {
+        alert('⚠️ Debes iniciar sesión para usar el carrito');
+        window.location.href = '/Frontend/login.html';
+        return false;
+    }
+    return true;
+}
+
+// ============================================
+// 🛒 FUNCIONES DEL CARRITO (localStorage)
+// ============================================
+
+/**
+ * Obtener el carrito del localStorage
+ */
+function getLocalCart() {
+    const cart = localStorage.getItem('cart');
+    return cart ? JSON.parse(cart) : { items: [], cupon_aplicado: null, descuento: 0 };
+}
+
+/**
+ * Guardar el carrito en localStorage
+ */
+function saveLocalCart(cart) {
+    localStorage.setItem('cart', JSON.stringify(cart));
+}
+
+/**
+ * Agregar producto al carrito en localStorage
+ */
+function addToLocalCart(producto) {
+    const cart = getLocalCart();
     
+    // Verificar si el producto ya existe
+    const existingIndex = cart.items.findIndex(item => item.product_id === producto.product_id);
+    
+    if (existingIndex !== -1) {
+        // Si existe, incrementar cantidad
+        cart.items[existingIndex].cantidad += producto.cantidad;
+    } else {
+        // Si no existe, agregarlo
+        cart.items.push(producto);
+    }
+    
+    saveLocalCart(cart);
+}
+
+/**
+ * Actualizar cantidad de un producto
+ */
+function updateLocalCartItem(product_id, nuevaCantidad) {
+    const cart = getLocalCart();
+    const item = cart.items.find(i => i.product_id === product_id);
+    
+    if (item) {
+        item.cantidad = nuevaCantidad;
+        saveLocalCart(cart);
+    }
+}
+
+/**
+ * Eliminar producto del carrito
+ */
+function removeFromLocalCart(product_id) {
+    const cart = getLocalCart();
+    cart.items = cart.items.filter(item => item.product_id !== product_id);
+    
+    // Si se eliminó todo, también quitar el cupón
+    if (cart.items.length === 0) {
+        cart.cupon_aplicado = null;
+        cart.descuento = 0;
+    }
+    
+    saveLocalCart(cart);
+}
+
+/**
+ * Aplicar cupón al carrito
+ */
+function applyLocalCoupon(cupon, descuento) {
+    const cart = getLocalCart();
+    cart.cupon_aplicado = cupon;
+    cart.descuento = descuento;
+    saveLocalCart(cart);
+}
+
+/**
+ * Limpiar el carrito
+ */
+function clearLocalCart() {
+    localStorage.removeItem('cart');
+}
+
+// ============================================
+// 🎨 FUNCIONES DE INTERFAZ
+// ============================================
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Verificar autenticación
+    if (!requireAuth()) return;
+    
+    const cartListElement = document.getElementById('cart-items-list');
     if (!cartListElement) return;
 
     cargarCarrito();
@@ -11,40 +133,89 @@ document.addEventListener('DOMContentLoaded', () => {
     if (checkoutBtn) {
         checkoutBtn.addEventListener('click', abrirModalPago);
     }
+    
+    // Botón para aplicar cupón
+    const couponBtn = document.querySelector('.coupon-btn');
+    if (couponBtn) {
+        couponBtn.addEventListener('click', aplicarCupon);
+    }
 });
 
+/**
+ * Cargar el carrito desde localStorage y validar con el backend
+ */
 async function cargarCarrito() {
-    const carritoSimulado = [
-        {
-            id: 1,
-            nombre: "Laptop Gamer Avanzada",
-            precio: 48500.00,
-            imagen: "http://localhost:3000/images/laptop-gamer.png",
-            cantidad: 1
-        },
-        {
-            id: 4,
-            nombre: "Teclado Mecánico RGB",
-            precio: 3100.00,
-            imagen: "http://localhost:3000/images/teclado-mecanico.png",
-            cantidad: 2
-        }
-    ];
+    const cart = getLocalCart();
     
-    mostrarItemsCarrito(carritoSimulado);
-    actualizarTotales(carritoSimulado);
+    if (cart.items.length === 0) {
+        mostrarCarritoVacio();
+        return;
+    }
+    
+    try {
+        // Validar productos con el backend
+        const response = await fetch('http://localhost:3000/tech-up/api/cart', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${getAuthToken()}`
+            },
+            body: JSON.stringify({ items: cart.items })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok && data.success) {
+            // Actualizar el carrito local con los datos validados
+            cart.items = data.cart.items;
+            saveLocalCart(cart);
+            
+            mostrarItemsCarrito(cart.items);
+            actualizarTotales(cart);
+        } else {
+            console.error('Error al validar carrito:', data.message);
+            mostrarItemsCarrito(cart.items);
+            actualizarTotales(cart);
+        }
+        
+    } catch (error) {
+        console.error('Error al cargar carrito:', error);
+        // Mostrar el carrito local aunque falle la validación
+        mostrarItemsCarrito(cart.items);
+        actualizarTotales(cart);
+    }
 }
 
-function mostrarItemsCarrito(carrito) {
+/**
+ * Mostrar mensaje de carrito vacío
+ */
+function mostrarCarritoVacio() {
+    const cartListElement = document.getElementById('cart-items-list');
+    cartListElement.innerHTML = `
+        <div class="empty-cart-message">
+            <h3>🛒 Tu carrito está vacío</h3>
+            <p>¡Agrega productos para comenzar tu compra!</p>
+            <a href="/Frontend/productos.html" class="submit-btn">Ver Productos</a>
+        </div>
+    `;
+    
+    document.getElementById('summary-subtotal').textContent = '$0.00';
+    document.getElementById('summary-total').textContent = '$0.00';
+}
+
+/**
+ * Mostrar items del carrito en la interfaz
+ */
+function mostrarItemsCarrito(items) {
     const cartListElement = document.getElementById('cart-items-list');
     cartListElement.innerHTML = '';
 
-    if (carrito.length === 0) {
-        cartListElement.innerHTML = '<p>Tu carrito está vacío.</p>';
+    if (items.length === 0) {
+        mostrarCarritoVacio();
         return;
     }
 
-    carrito.forEach(item => {
+    items.forEach(item => {
         const itemElement = document.createElement('div');
         itemElement.classList.add('cart-item');
         
@@ -55,30 +226,202 @@ function mostrarItemsCarrito(carrito) {
             <div class="cart-item-details">
                 <h4 class="cart-item-title">${item.nombre}</h4>
                 <p class="cart-item-price">$${item.precio.toFixed(2)}</p>
-                <button class="cart-item-remove" data-id="${item.id}">Eliminar</button>
+                <button class="cart-item-remove" data-id="${item.product_id}">Eliminar</button>
             </div>
             <div class="cart-item-controls">
-                <label for="qty-${item.id}">Cantidad:</label>
-                <input type="number" id="qty-${item.id}" class="cart-item-qty" value="${item.cantidad}" min="1" data-id="${item.id}">
+                <label for="qty-${item.product_id}">Cantidad:</label>
+                <input type="number" id="qty-${item.product_id}" class="cart-item-qty" 
+                       value="${item.cantidad}" min="1" max="${item.stock_disponible || 99}" 
+                       data-id="${item.product_id}">
                 <p class="cart-item-subtotal">Subtotal: $${subtotalItem.toFixed(2)}</p>
+                ${item.stock_disponible ? `<small style="color: #888;">Stock: ${item.stock_disponible}</small>` : ''}
             </div>
         `;
         cartListElement.appendChild(itemElement);
     });
+    
+    // Agregar event listeners a los botones de eliminar
+    document.querySelectorAll('.cart-item-remove').forEach(btn => {
+        btn.addEventListener('click', eliminarProducto);
+    });
+    
+    // Agregar event listeners a los inputs de cantidad
+    document.querySelectorAll('.cart-item-qty').forEach(input => {
+        input.addEventListener('change', actualizarCantidad);
+    });
 }
 
-function actualizarTotales(carrito) {
-    const subtotal = carrito.reduce((acc, item) => {
+/**
+ * Actualizar totales del resumen
+ */
+function actualizarTotales(cart) {
+    const subtotal = cart.items.reduce((acc, item) => {
         return acc + (item.precio * item.cantidad);
     }, 0);
 
-    const total = subtotal;
+    const descuento = cart.descuento || 0;
+    const total = subtotal - descuento;
 
     document.getElementById('summary-subtotal').textContent = `$${subtotal.toFixed(2)}`;
     document.getElementById('summary-total').textContent = `$${total.toFixed(2)}`;
+    
+    // Mostrar descuento si hay cupón aplicado
+    if (cart.cupon_aplicado) {
+        const cuponInput = document.getElementById('coupon-code');
+        if (cuponInput) {
+            cuponInput.value = cart.cupon_aplicado.codigo;
+            cuponInput.disabled = true;
+        }
+        
+        const cuponBtn = document.querySelector('.coupon-btn');
+        if (cuponBtn) {
+            cuponBtn.textContent = '✅ Aplicado';
+            cuponBtn.disabled = true;
+        }
+    }
 }
 
-// ============ FUNCIONES PARA EL MODAL DE PAGO ============
+/**
+ * Actualizar cantidad de un producto
+ */
+async function actualizarCantidad(e) {
+    const product_id = e.target.dataset.id;
+    const nuevaCantidad = parseInt(e.target.value);
+    
+    if (nuevaCantidad < 1) {
+        alert('La cantidad debe ser mayor a 0');
+        e.target.value = 1;
+        return;
+    }
+    
+    try {
+        // Validar con el backend
+        const response = await fetch('http://localhost:3000/tech-up/api/cart/update', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${getAuthToken()}`
+            },
+            body: JSON.stringify({ product_id, cantidad: nuevaCantidad })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok && data.success) {
+            // Actualizar localStorage
+            updateLocalCartItem(product_id, nuevaCantidad);
+            
+            // Recargar carrito
+            cargarCarrito();
+        } else {
+            alert('⚠️ ' + data.message);
+            // Revertir el valor
+            cargarCarrito();
+        }
+        
+    } catch (error) {
+        console.error('Error al actualizar cantidad:', error);
+        alert('❌ Error al actualizar la cantidad');
+        cargarCarrito();
+    }
+}
+
+/**
+ * Eliminar producto del carrito
+ */
+async function eliminarProducto(e) {
+    const product_id = e.target.dataset.id;
+    
+    if (!confirm('¿Seguro que quieres eliminar este producto?')) {
+        return;
+    }
+    
+    try {
+        // Notificar al backend (opcional, ya que está en localStorage)
+        const response = await fetch('http://localhost:3000/tech-up/api/cart/remove', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${getAuthToken()}`
+            },
+            body: JSON.stringify({ product_id })
+        });
+        
+        // Eliminar del localStorage
+        removeFromLocalCart(product_id);
+        
+        // Recargar carrito
+        cargarCarrito();
+        
+    } catch (error) {
+        console.error('Error al eliminar producto:', error);
+        // Eliminar de todas formas del localStorage
+        removeFromLocalCart(product_id);
+        cargarCarrito();
+    }
+}
+
+/**
+ * Aplicar cupón de descuento
+ */
+async function aplicarCupon() {
+    const cuponInput = document.getElementById('coupon-code');
+    const codigo_cupon = cuponInput.value.trim();
+    
+    if (!codigo_cupon) {
+        alert('⚠️ Ingresa un código de cupón');
+        return;
+    }
+    
+    const cart = getLocalCart();
+    const subtotal = cart.items.reduce((acc, item) => acc + (item.precio * item.cantidad), 0);
+    
+    if (subtotal === 0) {
+        alert('⚠️ Tu carrito está vacío');
+        return;
+    }
+    
+    const cuponBtn = document.querySelector('.coupon-btn');
+    cuponBtn.textContent = 'Validando...';
+    cuponBtn.disabled = true;
+    
+    try {
+        const response = await fetch('http://localhost:3000/tech-up/api/cart/apply-coupon', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${getAuthToken()}`
+            },
+            body: JSON.stringify({ codigo_cupon, subtotal })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok && data.success) {
+            // Aplicar cupón en localStorage
+            applyLocalCoupon(data.cupon, data.descuento);
+            
+            alert(`✅ ${data.message}\n💰 Ahorro: $${data.descuento.toFixed(2)}`);
+            
+            // Recargar carrito con el descuento
+            cargarCarrito();
+        } else {
+            alert('⚠️ ' + data.message);
+            cuponBtn.textContent = 'Aplicar';
+            cuponBtn.disabled = false;
+        }
+        
+    } catch (error) {
+        console.error('Error al aplicar cupón:', error);
+        alert('❌ Error al aplicar el cupón');
+        cuponBtn.textContent = 'Aplicar';
+        cuponBtn.disabled = false;
+    }
+}
+
+// ============================================
+// 💳 FUNCIONES DEL MODAL DE PAGO
+// ============================================
 
 let captchaWidgets = {
     tarjeta: null,
@@ -87,7 +430,15 @@ let captchaWidgets = {
 };
 
 function abrirModalPago() {
-    const total = document.getElementById('summary-total').textContent;
+    const cart = getLocalCart();
+    
+    if (cart.items.length === 0) {
+        alert('⚠️ Tu carrito está vacío');
+        return;
+    }
+    
+    const totalElement = document.getElementById('summary-total');
+    const total = totalElement.textContent;
     
     const modalHTML = `
         <div id="payment-modal" class="payment-modal">
@@ -200,9 +551,9 @@ function abrirModalPago() {
                         <ol>
                             <li>Acude a cualquier tienda OXXO</li>
                             <li>Indica que quieres realizar un pago de servicio</li>
-                            <li>Dicta el código de referencia al cajero</li>
+                            <li>Proporciona el código de referencia</li>
                             <li>Realiza el pago en efectivo</li>
-                            <li>Conserva tu comprobante</li>
+                            <li>Guarda tu comprobante</li>
                         </ol>
                     </div>
                     
@@ -220,22 +571,24 @@ function abrirModalPago() {
     
     document.body.insertAdjacentHTML('beforeend', modalHTML);
     
-    const modal = document.getElementById('payment-modal');
+    setTimeout(() => renderizarCaptcha('tarjeta'), 500);
+    
     const closeBtn = document.querySelector('.close-modal');
-    const methodButtons = document.querySelectorAll('.payment-method-btn');
-    const forms = document.querySelectorAll('.payment-form');
-    
-    setTimeout(() => renderizarCaptcha('tarjeta'), 100);
-    
     closeBtn.addEventListener('click', cerrarModalPago);
-    window.addEventListener('click', (e) => {
+    
+    const modal = document.getElementById('payment-modal');
+    modal.addEventListener('click', (e) => {
         if (e.target === modal) cerrarModalPago();
     });
     
-    methodButtons.forEach(btn => {
+    const methodBtns = document.querySelectorAll('.payment-method-btn');
+    const forms = document.querySelectorAll('.payment-form');
+    
+    methodBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             const method = btn.dataset.method;
-            methodButtons.forEach(b => b.classList.remove('active'));
+            
+            methodBtns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             
             forms.forEach(form => {
@@ -249,7 +602,6 @@ function abrirModalPago() {
         });
     });
     
-    // Formatear inputs
     const cardNumberInput = document.getElementById('card-number');
     if (cardNumberInput) {
         cardNumberInput.addEventListener('input', (e) => {
@@ -312,7 +664,6 @@ function cerrarModalPago() {
     }
 }
 
-// 🔐 FUNCIÓN ACTUALIZADA: Ahora envía al backend
 function procesarPago(e) {
     e.preventDefault();
     
@@ -325,7 +676,6 @@ function procesarPago(e) {
         return;
     }
     
-    // 1️⃣ Obtener token del CAPTCHA
     let captchaToken;
     try {
         captchaToken = grecaptcha.getResponse(widgetId);
@@ -345,18 +695,16 @@ function procesarPago(e) {
     submitBtn.textContent = 'Procesando...';
     submitBtn.disabled = true;
     
-    // 2️⃣ Recopilar datos del formulario
     const datos = recopilarDatosCompra(metodo);
     const total = document.getElementById('summary-total').textContent;
     
-    // 3️⃣ Enviar al servidor CON el token del CAPTCHA
     fetch('http://localhost:3000/tech-up/procesar-pago', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            captchaToken: captchaToken,  // ⭐ TOKEN DEL CAPTCHA
+            captchaToken: captchaToken,
             metodo: metodo,
             datos: datos,
             total: total
@@ -381,12 +729,12 @@ function procesarPago(e) {
             alert(mensaje);
             cerrarModalPago();
             
-            // Limpiar carrito
-            document.getElementById('cart-items-list').innerHTML = '<p>Tu carrito está vacío.</p>';
-            document.getElementById('summary-subtotal').textContent = '$0.00';
-            document.getElementById('summary-total').textContent = '$0.00';
+            // Limpiar carrito de localStorage
+            clearLocalCart();
+            
+            // Recargar la página
+            window.location.reload();
         } else {
-            // ❌ El servidor rechazó el pago
             alert('⚠️ ' + data.message);
             submitBtn.textContent = originalText;
             submitBtn.disabled = false;

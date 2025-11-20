@@ -1,3 +1,5 @@
+// 📁 Frontend/js/register.js
+
 document.addEventListener('DOMContentLoaded', () => {
     const registerForm = document.getElementById('register-form');
     if (!registerForm) return;
@@ -51,17 +53,27 @@ document.addEventListener('DOMContentLoaded', () => {
                     nombre: nombre,
                     email: email,
                     password: password,
-                    captchaToken: captchaResponse // ← Incluir el token
+                    captchaToken: captchaResponse
                 })
             });
 
             const data = await response.json();
 
-            if (response.ok) {
+            if (response.ok && data.success) {
+                // ⭐ GUARDAR EL TOKEN JWT EN LOCALSTORAGE
+                localStorage.setItem('authToken', data.token);
+                
+                // ⭐ GUARDAR INFO DEL USUARIO
+                localStorage.setItem('user', JSON.stringify(data.user));
+                
                 messageElement.textContent = '¡Cuenta creada con éxito!';
                 messageElement.style.color = 'var(--color-primary)';
-                registerForm.reset();
-                grecaptcha.reset(); // Resetear el captcha
+                
+                // Redirigir después de 1 segundo
+                setTimeout(() => {
+                    window.location.href = '/Frontend/productos.html';
+                }, 1000);
+                
             } else {
                 messageElement.textContent = data.message || 'Error al crear la cuenta';
                 messageElement.style.color = '#ff4d4d';

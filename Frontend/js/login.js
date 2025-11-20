@@ -1,3 +1,5 @@
+// 📁 Frontend/js/login.js
+
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('login-form');
     if (!loginForm) return;
@@ -33,16 +35,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({
                     email: email,
                     password: password,
-                    captchaToken: captchaResponse // ← Incluir el token
+                    captchaToken: captchaResponse
                 })
             });
 
             const data = await response.json();
 
-            if (response.ok) {
-                alert('¡Login exitoso!');
-                messageElement.textContent = '¡Login exitoso!';
+            if (response.ok && data.success) {
+                // ⭐ GUARDAR EL TOKEN JWT EN LOCALSTORAGE
+                localStorage.setItem('authToken', data.token);
+                
+                // ⭐ GUARDAR INFO DEL USUARIO
+                localStorage.setItem('user', JSON.stringify(data.user));
+                
+                messageElement.textContent = `¡Bienvenido, ${data.user.nombre}!`;
                 messageElement.style.color = 'var(--color-primary)';
+                
+                // Redirigir después de 1 segundo
+                setTimeout(() => {
+                    window.location.href = '/Frontend/productos.html';
+                }, 1000);
+                
             } else {
                 messageElement.textContent = data.message || 'Error en tus credenciales';
                 messageElement.style.color = '#ff4d4d';
