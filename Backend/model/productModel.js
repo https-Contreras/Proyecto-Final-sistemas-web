@@ -58,7 +58,53 @@ const getProductById = async (id) => {
     return rows[0]; // Retorna el primer resultado o undefined
 };
 
+
+/*
+FUNCIONES PARA EL CRUD DEL ADMIN*/
+const createProduct = async (data) => {
+    const { product_id, nombre, descripcion, precio, stock, categoria, imagen, en_oferta } = data;
+    
+    // Convertimos el booleano a 1 o 0 para MySQL
+    const ofertaBit = (en_oferta === true || en_oferta === 'true') ? 1 : 0;
+
+    const [result] = await pool.execute(
+        `INSERT INTO productos 
+        (product_id, nombre, descripcion, precio, stock, categoria, imagen, en_oferta) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        [product_id, nombre, descripcion, precio, stock, categoria, imagen, ofertaBit]
+    );
+    return result;
+};
+
+/**
+ * Actualiza un producto existente
+ */
+const updateProduct = async (id, data) => {
+    const { nombre, descripcion, precio, stock, categoria, imagen, en_oferta } = data;
+    
+    const ofertaBit = (en_oferta === true || en_oferta === 'true') ? 1 : 0;
+
+    const [result] = await pool.execute(
+        `UPDATE productos 
+         SET nombre=?, descripcion=?, precio=?, stock=?, categoria=?, imagen=?, en_oferta=?
+         WHERE id=?`,
+        [nombre, descripcion, precio, stock, categoria, imagen, ofertaBit, id]
+    );
+    return result;
+};
+
+const deleteProduct = async (id) => {
+    const [result] = await pool.execute(
+        'DELETE FROM productos WHERE id = ?',
+        [id]
+    );
+    return result;
+};
+
 module.exports = {
     getAllProducts,
-    getProductById
+    getProductById, 
+    createProduct,
+    updateProduct,
+    deleteProduct
 };

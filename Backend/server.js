@@ -9,7 +9,7 @@ const contactRoutes = require("./routes/contact.routes");
 const subscriptionRoutes = require("./routes/subscription.routes");
 const promotionRoutes = require("./routes/promotion.routes");
 const productRoutes = require("./routes/product.routes");
-
+const adminRoutes = require("./routes/admin.routes");
 
 const app = express();
 const ALLOWED_ORIGINS = ["http://localhost:5500", "http://127.0.0.1:5500"];
@@ -42,6 +42,9 @@ app.get("/tech-up/test", (req, res) => {
 
 // 👤 Rutas de usuarios (login, register) - CON CAPTCHA
 app.use("/tech-up/users", userRoutes);
+//rutas de admin:
+app.use("/tech-up/api/admin", adminRoutes);
+
 
 // 💳 Rutas de pagos - CON CAPTCHA
 app.use("/tech-up", paymentRoutes);

@@ -35,6 +35,19 @@
         </div>
 
         <section id="section-inventory" class="admin-section active">
+            <div class="table-tools" style="margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <label for="admin-filter-cat" style="color: var(--color-text-muted); font-weight: 600;">Filtrar por:</label>
+                    <select id="admin-filter-cat" class="filter-select" style="width: 200px; padding: 0.5rem;">
+                        <option value="all">Todas las Categorías</option>
+                        <option value="laptops">Laptops</option>
+                        <option value="desktops">Desktops</option>
+                        <option value="accesorios">Accesorios</option>
+                    </select>
+                </div>
+                
+                <span id="inventory-count" style="color: var(--color-text-muted); font-size: 0.9rem;">Mostrando: Todos</span>
+            </div>
             <div class="table-wrapper">
                 <table class="data-table">
                     <thead>
@@ -86,24 +99,26 @@
             <h2 id="modal-title">Nuevo Producto</h2>
             
             <form id="product-form">
-                <input type="hidden" id="prod-id"> <div class="form-group">
-                    <label>Nombre del Producto</label>
-                    <input type="text" id="prod-nombre" required>
+                <input type="hidden" id="prod-id"> 
+                
+                <div class="form-group">
+                    <input type="text" id="prod-nombre" placeholder=" " required>
+                    <label for="prod-nombre">Nombre del Producto</label>
                 </div>
                 
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Precio</label>
-                        <input type="number" id="prod-precio" step="0.01" required>
+                        <input type="number" id="prod-precio" step="0.01" placeholder=" " required>
+                        <label for="prod-precio">Precio</label>
                     </div>
                     <div class="form-group">
-                        <label>Stock</label>
-                        <input type="number" id="prod-stock" required>
+                        <input type="number" id="prod-stock" placeholder=" " required>
+                        <label for="prod-stock">Stock</label>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label>Categoría</label>
+                    <label for="prod-categoria" style="position:static; display:block; margin-bottom:5px; font-size:0.8rem; color:var(--color-primary);">Categoría</label>
                     <select id="prod-categoria" class="filter-select" style="width: 100%;">
                         <option value="laptops">Laptops</option>
                         <option value="desktops">Desktops</option>
@@ -112,18 +127,18 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Descripción</label>
-                    <textarea id="prod-descripcion" rows="3"></textarea>
+                    <textarea id="prod-descripcion" rows="3" placeholder=" "></textarea>
+                    <label for="prod-descripcion">Descripción</label>
                 </div>
 
                 <div class="form-group">
-                    <label>URL Imagen</label>
-                    <input type="url" id="prod-imagen" placeholder="http://...">
+                    <input type="url" id="prod-imagen" placeholder=" ">
+                    <label for="prod-imagen">URL Imagen</label>
                 </div>
 
-                <div class="form-check">
+                <div class="form-check" style="margin-top: 1rem; margin-bottom: 1.5rem;">
                     <input type="checkbox" id="prod-oferta">
-                    <label for="prod-oferta">¿En Oferta?</label>
+                    <label for="prod-oferta" style="position: static; margin-left: 0.5rem;">¿En Oferta?</label>
                 </div>
 
                 <button type="submit" class="submit-btn">Guardar</button>
