@@ -225,58 +225,56 @@ function initPaymentButton() {
     }
 }
 
+
 async function procesarPago() {
     const token = localStorage.getItem('userToken');
     const btn = document.getElementById('btn-confirmar-pago');
     
-    // 1. Verificar CAPTCHA
-    if (typeof grecaptcha === 'undefined') {
-        Swal.fire({
-            title: 'Error',
-            text: 'El CAPTCHA no se cargó correctamente. Recarga la página.',
-            icon: 'error',
-            background: '#1a202c',
-            color: '#e2e8f0'
-        });
-        return;
-    }
-    
+    // 1. VALIDAR CAPTCHA
+    if (typeof grecaptcha === 'undefined') { return; }
     const captchaResponse = grecaptcha.getResponse();
     
     if (!captchaResponse) {
         Swal.fire({
-            title: 'Verificación Requerida',
-            text: 'Por favor, completa el CAPTCHA para continuar',
+            title: 'Captcha requerido',
+            text: 'Por favor valida que no eres un robot',
             icon: 'warning',
-            confirmButtonText: 'Entendido',
-            background: '#1a202c',
-            color: '#e2e8f0'
+            background: '#1a202c', color: '#e2e8f0'
         });
         return;
     }
-    
-    // 2. Obtener método de pago seleccionado
-    const metodoSeleccionado = document.querySelector('input[name="payment-method"]:checked').value;
-    
-    // 3. Validar formulario según método
-    const validacion = validarFormularioPago(metodoSeleccionado);
-    if (!validacion.valid) {
+
+    // 2. RECUPERAR Y VALIDAR DATOS DE ENVÍO
+    const nombre = document.getElementById('ship-name').value.trim();
+    const email = document.getElementById('ship-email').value.trim();
+    const telefono = document.getElementById('ship-phone').value.trim();
+    const calle = document.getElementById('ship-address').value.trim();
+    const colonia = document.getElementById('ship-colonia').value.trim();
+    const cp = document.getElementById('ship-zip').value.trim();
+    const ciudad = document.getElementById('ship-city').value.trim();
+    const estado = document.getElementById('ship-state').value.trim();
+
+    if (!nombre || !email || !telefono || !calle || !colonia || !cp || !ciudad || !estado) {
         Swal.fire({
             title: 'Datos Incompletos',
-            text: validacion.message,
+            text: 'Por favor llena todos los campos de envío para tu nota de compra.',
             icon: 'warning',
-            background: '#1a202c',
-            color: '#e2e8f0'
+            background: '#1a202c', color: '#e2e8f0'
         });
         return;
     }
-    
-    // 4. Mostrar estado de procesamiento
+
+    // 3. OBTENER MÉTODO Y TOTAL VISUAL
+    const metodoSeleccionado = document.querySelector('input[name="payment-method"]:checked').value;
+    const totalTexto = document.getElementById('checkout-total').textContent.replace('$', '').replace(',', '');
+    const total = parseFloat(totalTexto);
+
+    // Feedback visual
     btn.disabled = true;
-    btn.innerHTML = '⏳ Procesando pago...';
-    
+    btn.innerHTML = '⏳ Generando Orden...';
+
     try {
-        // 5. Obtener datos del carrito para el total
+        // 4. OBTENER CARRITO DEL BACKEND (Tu ruta GET existente)
         const cartResponse = await fetch(CART_API, {
             method: 'GET',
             headers: {
@@ -286,36 +284,54 @@ async function procesarPago() {
         });
         
         const cartData = await cartResponse.json();
-        
-        if (!cartResponse.ok || !cartData.success) {
-            throw new Error('Error al obtener el carrito');
+
+        // Validar que existan items antes de seguir
+        if (!cartResponse.ok || !cartData.success || !cartData.data || !cartData.data.items || cartData.data.items.length === 0) {
+            throw new Error('No se pudo recuperar el carrito o está vacío.');
         }
-        
-        const total = cartData.data.resumen.total;
-        
-        // 6. Simular procesamiento del pago
-        await new Promise(resolve => setTimeout(resolve, 2000)); // Simular delay
-        
-        // 7. Enviar al backend
-        const paymentResponse = await fetch(`${API_BASE_URL}/tech-up/procesar-pago`, {
+
+        // 5. ARMAR DATOS PARA EL CHECKOUT
+        // Formatear la dirección bonita para el PDF
+        const direccionCompleta = `${calle}, Col. ${colonia}, CP ${cp}, ${ciudad}, ${estado}. Tel: ${telefono}`;
+        const itemsDelBackend = cartData.data.items; 
+        const totalDelBackend = cartData.data.resumen.total;
+        const metodoSeleccionado = document.querySelector('input[name="payment-method"]:checked').value;
+        const orderData = {
+            // Mapeamos los items
+            items: itemsDelBackend.map(item => ({
+                id: item.product_id || item.productId || item.id, 
+                nombre: item.nombre,
+                precio: parseFloat(item.precio),
+                cantidad: parseInt(item.cantidad)
+            })),
+            total: parseFloat(totalDelBackend),
+            metodoPago: metodoSeleccionado,
+            shippingData: {
+                nombre: nombre,
+                email: email,
+                direccion: direccionCompleta
+            },
+            captchaToken: captchaResponse
+        };
+
+        // console.log("Enviando orden:", orderData); // Debug
+
+        // 6. ENVIAR A TU API DE PROCESAR PAGO (Tu ruta POST)
+        const response = await fetch('http://localhost:3000/tech-up/procesar-pago', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                metodo: metodoSeleccionado,
-                datos: obtenerDatosPago(metodoSeleccionado),
-                total: total,
-                captchaToken: captchaResponse
-            })
+            body: JSON.stringify(orderData),
         });
-        
-        const paymentData = await paymentResponse.json();
-        
-        if (paymentResponse.ok && paymentData.success) {
-            // 8. Vaciar el carrito
-            await fetch(`${CART_API}/clear`, {
+
+        const json = await response.json();
+
+        if (response.ok && json.success) {
+            
+            // 7. LIMPIAR CARRITO (Tu ruta DELETE existente)
+            await fetch(`${CART_API}/clear`, { // Asumo que tu ruta es /clear o la que tengas configurada para borrar
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -323,23 +339,30 @@ async function procesarPago() {
                 }
             });
             
-            // 9. Mostrar confirmación según método
-            mostrarConfirmacionPago(metodoSeleccionado, paymentData.ordenId, total);
-            
+            // 8. ÉXITO
+            await Swal.fire({
+                title: '¡Compra Exitosa!',
+                html: `<p>Orden <strong>#${json.orderId}</strong> generada.</p>
+                       <p>Hemos enviado la nota de compra en PDF a tu correo.</p>`,
+                icon: 'success',
+                confirmButtonText: 'Volver al Inicio',
+                background: '#1a202c', color: '#e2e8f0'
+            });
+
+            window.location.href = 'index.html';
+
         } else {
-            throw new Error(paymentData.message || 'Error al procesar el pago');
+            throw new Error(json.message || 'Error en el servidor');
         }
-        
+
     } catch (error) {
-        console.error('Error:', error);
+        console.error(error);
         Swal.fire({
-            title: 'Error en el Pago',
-            text: error.message || 'No se pudo procesar tu pago. Intenta de nuevo.',
+            title: 'Error',
+            text: error.message || 'No se pudo procesar la compra',
             icon: 'error',
-            background: '#1a202c',
-            color: '#e2e8f0'
+            background: '#1a202c', color: '#e2e8f0'
         });
-        
         btn.disabled = false;
         btn.innerHTML = '🔒 Confirmar y Pagar';
         grecaptcha.reset();

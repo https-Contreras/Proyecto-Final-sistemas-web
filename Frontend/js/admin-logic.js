@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 2. CARGAR INVENTARIO AL INICIAR ---
     cargarTablaProductos();
+    cargarEstadisticas();
 
     // --- 3. CONTROL DEL MODAL ---
     const modal = document.getElementById('product-modal');
@@ -249,3 +250,102 @@ window.editarProducto = async (id) => {
         Swal.fire('Error', 'No se pudo cargar el producto', 'error');
     }
 };
+let salesChartInstance = null;
+let inventoryChartInstance = null;
+
+async function cargarEstadisticas() {
+    // Verificamos si existen los elementos en el HTML
+    const canvasSales = document.querySelector('.chart-placeholder canvas') || createCanvasInPlaceholder(0);
+    const canvasInventory = document.querySelector('.chart-placeholder canvas') || createCanvasInPlaceholder(1);
+    const displayTotal = document.querySelector('.stat-number');
+
+    if (!canvasSales || !canvasInventory) return;
+
+    try {
+        const token = localStorage.getItem('userToken');
+        const response = await fetch('http://localhost:3000/tech-up/api/admin/dashboard-stats', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        const json = await response.json();
+
+        if (json.success) {
+            const { totalVentas, inventario, ventasMensuales } = json.data;
+
+            // 1. Texto Total Ventas (Busca el div con la clase .stat-number)
+            if(displayTotal) {
+                displayTotal.textContent = `$${parseFloat(totalVentas).toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            }
+
+            // 2. Gráfica de Ventas Mensuales
+            if (salesChartInstance) salesChartInstance.destroy();
+            
+            const ctxSales = canvasSales.getContext('2d');
+            salesChartInstance = new Chart(ctxSales, {
+                type: 'line', // Línea para ver tendencia mensual
+                data: {
+                    labels: ventasMensuales.map(item => item.mes),
+                    datasets: [{
+                        label: 'Ventas ($)',
+                        data: ventasMensuales.map(item => item.total),
+                        borderColor: '#00e5ff',
+                        backgroundColor: 'rgba(0, 229, 255, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { grid: { color: '#2d3748' }, ticks: { color: '#a0aec0' } },
+                        x: { grid: { display: false }, ticks: { color: '#a0aec0' } }
+                    }
+                }
+            });
+
+            // 3. Gráfica de Inventario
+            if (inventoryChartInstance) inventoryChartInstance.destroy();
+
+            const ctxInv = canvasInventory.getContext('2d');
+            inventoryChartInstance = new Chart(ctxInv, {
+                type: 'doughnut',
+                data: {
+                    labels: inventario.map(item => item.categoria),
+                    datasets: [{
+                        data: inventario.map(item => item.total_stock),
+                        backgroundColor: ['#00e5ff', '#7000ff', '#ff005c'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'right', labels: { color: '#a0aec0' } }
+                    }
+                }
+            });
+        }
+    } catch (error) {
+        console.error("Error cargando stats:", error);
+    }
+}
+
+// Helper para reemplazar el "placeholder" por un canvas real
+function createCanvasInPlaceholder(index) {
+    const placeholders = document.querySelectorAll('.chart-placeholder');
+    if (!placeholders[index]) return null;
+
+    const placeholder = placeholders[index];
+    placeholder.innerHTML = ''; // Borrar icono y texto
+    placeholder.style.border = 'none'; // Quitar borde punteado
+    
+    const canvas = document.createElement('canvas');
+    canvas.style.width = '100%';
+    canvas.style.height = '100%';
+    placeholder.appendChild(canvas);
+    
+    return canvas;
+}

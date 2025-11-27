@@ -919,7 +919,10 @@ h3 { color: var(--color-primary); } /* Títulos de producto también */
     
     /* (Puedes poner una <img /> aquí adentro después) */
 }
+/*.team-photo-placeholder img {
 
+}
+*/
 .team-card h4 {
     color: var(--color-text);
     font-size: 1.25rem;

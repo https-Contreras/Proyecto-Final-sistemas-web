@@ -11,6 +11,13 @@
 const API_BASE_URL = 'http://localhost:3000';
 const CART_API = `${API_BASE_URL}/api/cart`;
 
+const COSTOS_ENVIO = {
+    'mx': 150.00,  // México
+    'usa': 450.00, // Estados Unidos
+    'ca': 600.00   // Canadá
+};
+
+let datosResumenActual = null; // Para guardar los montos base (subtotal/descuento)
 // ============================================
 // INICIALIZACIÓN
 // ============================================
@@ -48,6 +55,14 @@ function initEventListeners() {
         });
     }
     
+    const countrySelect = document.getElementById('shipping-country');
+    if (countrySelect) {
+        countrySelect.addEventListener('change', () => {
+            // Si ya tenemos datos cargados, recalculamos
+            if (datosResumenActual) actualizarResumen(datosResumenActual);
+        });
+    }
+
     const checkoutBtn = document.querySelector('.checkout-btn');
     if (checkoutBtn) {
         checkoutBtn.addEventListener('click', finalizarCompra);
@@ -110,6 +125,9 @@ function renderizarCarrito(cartData) {
         cartContainer.appendChild(itemElement);
     });
     
+    // --- CAMBIO CLAVE: Guardamos los datos base en la global ---
+    datosResumenActual = resumen; 
+    
     actualizarResumen(resumen);
     actualizarContadorHeader(resumen.cantidadItems);
 }
@@ -155,72 +173,118 @@ function crearItemElement(item) {
     
     return div;
 }
-
 function actualizarResumen(resumen) {
     const subtotalEl = document.getElementById('summary-subtotal');
     const shippingEl = document.getElementById('summary-shipping');
     const totalEl = document.getElementById('summary-total');
     
-    if (subtotalEl) subtotalEl.textContent = `$${resumen.subtotal.toFixed(2)}`;
+    // 1. Obtener valores base
+    const subtotal = parseFloat(resumen.subtotal);
+    const descuento = parseFloat(resumen.descuento || 0);
+
+    // 2. Calcular Envío según el país seleccionado
+    const countrySelect = document.getElementById('shipping-country');
+    const paisSeleccionado = countrySelect ? countrySelect.value : 'mx';
+    
+    // Si el carrito está vacío o el subtotal es 0, el envío es 0. Si no, tarifa del país.
+    const costoEnvio = (resumen.cantidadItems > 0) ? (COSTOS_ENVIO[paisSeleccionado] || 0) : 0;
+
+    // 3. Calcular Total Final
+    const total = subtotal - descuento + costoEnvio;
+
+    // 4. Actualizar HTML
+    if (subtotalEl) subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
     
     if (shippingEl) {
-        if (resumen.envio === 0 && resumen.cuponAplicado) {
-            shippingEl.innerHTML = '<span style="color: var(--color-primary);">¡Gratis!</span>';
-        } else if (resumen.cantidadItems === 0) {
-            shippingEl.textContent = 'Por calcular';
+        if (resumen.cantidadItems === 0) {
+            shippingEl.textContent = '$0.00';
         } else {
-            shippingEl.textContent = `$${resumen.envio.toFixed(2)}`;
+            shippingEl.textContent = `$${costoEnvio.toFixed(2)}`;
         }
     }
     
-    if (totalEl) totalEl.textContent = `$${resumen.total.toFixed(2)}`;
+    if (totalEl) totalEl.textContent = `$${total.toFixed(2)}`;
     
     mostrarDescuento(resumen);
 }
-
 function mostrarDescuento(resumen) {
     let discountLine = document.querySelector('.summary-line.discount');
     const totalLine = document.querySelector('.summary-line.total');
     
+    const couponInput = document.getElementById('coupon-code');
+    let couponBtn = document.querySelector('.coupon-btn'); // Usamos let para actualizar la referencia
+
+    // 1. Lógica Visual del Descuento (Montos)
     if (resumen.descuento > 0 || resumen.cuponAplicado) {
         if (!discountLine && totalLine) {
             discountLine = document.createElement('div');
             discountLine.className = 'summary-line discount';
             totalLine.parentNode.insertBefore(discountLine, totalLine);
         }
-        
         if (discountLine) {
             discountLine.innerHTML = `
                 <span style="color: var(--color-primary);">Descuento (${resumen.cuponAplicado}):</span>
                 <span style="color: var(--color-primary);">-$${resumen.descuento.toFixed(2)}</span>
             `;
         }
-        
-        const couponInput = document.getElementById('coupon-code');
-        const couponBtn = document.querySelector('.coupon-btn');
-        
+
+        // 2. Lógica del Botón (LA PARTE QUE PEDISTE)
         if (couponInput && couponBtn) {
             couponInput.value = resumen.cuponAplicado;
             couponInput.disabled = true;
+
+            // ESTADO 1: "✓ Aplicado" (Visual, dura 2 segundos)
             couponBtn.textContent = '✓ Aplicado';
             couponBtn.disabled = true;
             couponBtn.style.background = 'var(--color-primary)';
+            couponBtn.style.color = '#fff';
+            couponBtn.style.borderColor = 'var(--color-primary)';
+
+            // ESTADO 2: Transición a "Quitar"
+            setTimeout(() => {
+                // Verificamos que el botón siga existiendo en el DOM
+                couponBtn = document.querySelector('.coupon-btn');
+                if(!couponBtn) return;
+
+                couponBtn.textContent = '✖ Quitar';
+                couponBtn.style.background = 'transparent'; 
+                couponBtn.style.color = '#ff4d4d'; // Rojo
+                couponBtn.style.borderColor = '#ff4d4d';
+                couponBtn.disabled = false;
+
+                // IMPORTANTE: Limpiamos listeners viejos (clonando el botón) y asignamos eliminar
+                const newBtn = couponBtn.cloneNode(true);
+                couponBtn.parentNode.replaceChild(newBtn, couponBtn);
+                
+                // Asignamos el evento de borrar
+                newBtn.addEventListener('click', eliminarCupon);
+
+            }, 2000); // 2 segundos de espera
         }
+
     } else {
+        // Lógica cuando NO hay cupón (Resetear a estado normal)
         if (discountLine) discountLine.remove();
         
-        const couponInput = document.getElementById('coupon-code');
-        const couponBtn = document.querySelector('.coupon-btn');
-        
         if (couponInput && couponBtn) {
+            couponInput.value = '';
             couponInput.disabled = false;
+            
             couponBtn.textContent = 'Aplicar';
             couponBtn.disabled = false;
-            couponBtn.style.background = '';
+            couponBtn.style.background = ''; // Reset estilos
+            couponBtn.style.color = '';
+            couponBtn.style.borderColor = '';
+
+            // Limpiamos listeners y asignamos aplicar
+            const newBtn = couponBtn.cloneNode(true);
+            couponBtn.parentNode.replaceChild(newBtn, couponBtn);
+            
+            // Asignamos el evento de aplicar
+            newBtn.addEventListener('click', aplicarCupon);
         }
     }
 }
-
 function mostrarCarritoVacio(mensaje = 'Tu carrito está vacío') {
     const cartContainer = document.getElementById('cart-items-list');
     
@@ -360,6 +424,51 @@ async function aplicarCupon() {
         couponBtn.textContent = originalText;
         couponBtn.disabled = false;
         mostrarNotificacion('Error de conexión', 'error');
+    }
+}
+
+
+async function eliminarCupon() {
+    const token = localStorage.getItem('userToken');
+    const couponInput = document.getElementById('coupon-code');
+    const couponBtn = document.querySelector('.coupon-btn');
+
+    // Feedback visual inmediato
+    couponBtn.textContent = '...';
+    couponBtn.disabled = true;
+
+    try {
+        // Asegúrate de crear esta ruta en tu backend: router.delete('/cart/coupon', ...)
+        // O si usas la misma ruta de update, ajusta aquí.
+        const response = await fetch(`${CART_API}/remove-coupon`, { 
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+            renderizarCarrito(data.data); // Esto volverá a pintar todo y reseteara el botón a "Aplicar"
+            mostrarNotificacion('Cupón eliminado', 'info');
+            if (couponInput) {
+                couponInput.value = ''; // Limpiamos el input
+                couponInput.disabled = false;
+            }
+        } else {
+            mostrarNotificacion(data.message || 'Error al quitar cupón', 'error');
+            // Si falla, regresamos el botón a estado "Quitar"
+            couponBtn.textContent = '✖ Quitar';
+            couponBtn.disabled = false;
+        }
+
+    } catch (error) {
+        console.error(error);
+        mostrarNotificacion('Error de conexión', 'error');
+        couponBtn.textContent = '✖ Quitar';
+        couponBtn.disabled = false;
     }
 }
 
@@ -515,6 +624,8 @@ window.agregarAlCarrito = async function(productId, cantidad = 1) {
         return false;
     }
 };
+
+
 async function finalizarCompra() {
     const token = localStorage.getItem('userToken');
     const cartContainer = document.getElementById('cart-items-list');

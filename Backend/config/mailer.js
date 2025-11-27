@@ -41,33 +41,25 @@ function setupMailer() {
  * @param {string} subject - Asunto
  * @param {string} html - Cuerpo HTML
  */
-const sendEmail = async (to, subject, html) => {
+const sendEmail = async (to, subject, html, attachments = []) => {
     try {
         const mailTransporter = setupMailer();
-
-        // Si el setup falló, no hacemos nada
-        if (!mailTransporter) {
-            console.log("Envío de correo omitido: Mailer no configurado.");
-            return { success: false, error: "Mailer not configured" };
-        }
+        if (!mailTransporter) return;
 
         const info = await mailTransporter.sendMail({
-            from: `"Tech-Up" <${process.env.MAIL_USER}>`, // Usamos MAIL_USER como remitente
+            from: `"Tech-Up" <${process.env.MAIL_USER}>`,
             to: to,
             subject: subject,
             html: html,
+            attachments: attachments // <--- ¡Ahora sí los pasamos a Gmail!
         });
 
-        console.log("✅ Correo enviado con éxito. ID:", info.messageId);
-        return { success: true, messageId: info.messageId };
-
+        console.log("Correo enviado. ID:", info.messageId);
+        
     } catch (error) {
-        console.error("❌ Error al enviar el correo:", error);
-        throw error;
+        console.error("Error al enviar el correo:", error);
     }
 };
-
-
 /**
  * Envía un correo de bienvenida al usuario que se suscribe
  */

@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-
+const statsController = require("../controllers/statsController"); 
 // Importamos el controlador de productos (que ya tiene create, update, delete)
 const productController = require("../controllers/productController");
 // Importamos el controlador de suscripciones (para las stats)
@@ -20,15 +20,6 @@ router.put("/products/:id", verifyToken, verifyAdmin, productController.updatePr
 router.delete("/products/:id", verifyToken, verifyAdmin, productController.deleteProduct);
 
 
-// ==========================================
-// 📊 RUTAS DE ESTADÍSTICAS (DASHBOARD)
-// ==========================================
-
-// Obtener estadísticas de suscriptores (GET /api/admin/subscriptions/stats)
-//router.get("/subscriptions/stats", verifyToken, verifyAdmin, subscriptionController.getSubscriptionStats);
-
-// Obtener lista de suscriptores (GET /api/admin/subscriptions)
-//router.get("/subscriptions", verifyToken, verifyAdmin, subscriptionController.getAllSubscriptions);
 
 
 module.exports = router;
