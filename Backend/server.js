@@ -4,6 +4,9 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 
+// Importar Swagger
+const { swaggerUi, swaggerSpec } = require('./swagger/swagger');
+
 // Importar rutas
 const userRoutes = require("./routes/user.routes");
 const paymentRoutes = require("./routes/payment.routes");
@@ -12,7 +15,7 @@ const subscriptionRoutes = require("./routes/subscription.routes");
 const promotionRoutes = require("./routes/promotion.routes");
 const productRoutes = require("./routes/product.routes");
 const adminRoutes = require("./routes/admin.routes");
-const cartRoutes = require("./routes/cart.routes"); // ← NUEVO: Rutas del carrito
+const cartRoutes = require("./routes/cart.routes");
 
 const app = express();
 const ALLOWED_ORIGINS = ["http://localhost:5500", "http://127.0.0.1:5500"];
@@ -35,11 +38,18 @@ app.use(express.urlencoded({ extended: true }));
 
 const PORT = process.env.PORT || 3000;
 
+// 📚 SWAGGER DOCUMENTATION - Debe ir ANTES de las rutas
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: 'Tech-Up API Documentation',
+}));
+
 // Ruta de prueba
 app.get("/tech-up/test", (req, res) => {
   res.json({
     message: "¡Bienvenido a la API de Tech-Up!",
     success: true,
+    documentation: "http://localhost:" + PORT + "/api-docs"
   });
 });
 
@@ -70,4 +80,6 @@ app.use('/images', express.static('public/images'));
 
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`📚 Documentación Swagger: http://localhost:${PORT}/api-docs`);
+  console.log(`📦 Rutas del carrito disponibles en /api/cart`);
 });
